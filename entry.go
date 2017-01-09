@@ -1,15 +1,31 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os/exec"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 )
 
 func main() {
+	if _, err := exec.Command("go", "build", "api-gateway/plugin/protoc-gen-parse").CombinedOutput(); err != nil {
+		log.Fatalln(err)
+	}
+
+	cmd := exec.Command("protoc/protoc-3.1.0-linux-x86_64/bin/protoc", "--plugin=protoc-gen-parse", "--parse_out=.", "service/helloworld.proto")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(out))
+}
+
+func main1() {
 	log.Println("begin")
+
 	data, err := ioutil.ReadFile("proto/helloworld.proto")
 	if err != nil {
 		log.Fatal("read file error: ", err)
