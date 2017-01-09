@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -21,6 +22,13 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println(string(out))
+
+	var pfs descriptor.ServiceDescriptorProto
+	err = json.Unmarshal(out, &pfs)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(pfs.Name)
 }
 
 func main1() {
