@@ -22,8 +22,8 @@ func load() {
 	}
 
 	cmd := exec.Command("protoc/protoc-3.1.0-linux-x86_64/bin/protoc",
-		"-I.", "-Iservice/third_party/protobuf", "--plugin=protoc-gen-parse", "--parse_out=.",
-		"service/message.proto", "service/echo.proto", "service/helloworld.proto", "service/resource.proto")
+		"-I.", "-Iservice/third_party", "--plugin=protoc-gen-parse", "--parse_out=.",
+		"service/message.proto", "service/echo.proto", "service/helloworld.proto", "service/user.proto")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("error:", err)
