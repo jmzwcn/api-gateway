@@ -11,9 +11,9 @@ import (
 
 var PatternStore = make(map[string]types.MethodWrapper)
 
-func ParseAndLoad() {
+func ParseAndLoad() map[string]types.MethodWrapper {
 	load()
-	//PatternStore["abc"] = urlMapping{Method: "PUT", URLPattern: "abc"}
+	return PatternStore
 }
 
 func load() {
@@ -21,10 +21,9 @@ func load() {
 		log.Fatalln(err)
 	}
 
-	//cmd := exec.Command("protoc/protoc-3.1.0-linux-x86_64/bin/protoc", "--plugin=protoc-gen-parse", "--parse_out=.", "service/helloworld.proto")
 	cmd := exec.Command("protoc/protoc-3.1.0-linux-x86_64/bin/protoc",
-		"-I.", "-I/home/jmzwcn/work/src", "-Iservice/third_party/protobuf",
-		"--plugin=protoc-gen-parse", "--parse_out=.", "service/message.proto")
+		"-I.", "-Iservice/third_party/protobuf", "--plugin=protoc-gen-parse", "--parse_out=.",
+		"service/message.proto", "service/echo.proto", "service/helloworld.proto", "service/resource.proto")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Println("error:", err)
@@ -43,10 +42,12 @@ func load() {
 	}
 
 	for _, md := range methods {
-		log.Println(md.Pattern)
+		if md.Package != nil {
+			log.Println(*md.Package, *md.Pattern)
+		} else {
+			log.Println(*md.Pattern)
+		}
+		key := *md.Method + ":" + md.Pattern.Path
+		PatternStore[key] = md
 	}
-
-	//md := pf.GetService()[0].GetMethod()[0]
-	//ext, _ := proto.GetExtension(md.Options, options.E_Http)
-	//log.Println(ext)
 }
