@@ -2,4 +2,4 @@
 !plugin/
 debug
 protoc-gen-parse
-.vscode/
+\.vscode
