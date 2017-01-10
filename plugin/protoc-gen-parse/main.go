@@ -1,7 +1,7 @@
 package main
 
 import (
-	options "api-gateway/service/third_party/protobuf/google/api"
+	options "api-gateway/service/third_party/google/api"
 	"api-gateway/types"
 	"encoding/json"
 	"fmt"
