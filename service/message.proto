@@ -2,17 +2,10 @@ syntax = "proto3";
 package settings;
 
 import "google/api/annotations.proto";
-import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 import "runtime/extensions.proto";
-
-
-option (gogoproto.marshaler_all) = false;
-option (gogoproto.sizer_all) = false;
-option (gogoproto.unmarshaler_all) = false;
-
 
 service Message {
 
@@ -62,7 +55,7 @@ message MessageModel {
     string title = 2;
     int32  status = 3;
     string type = 4;
-    string description = 5 [(gogoproto.nullable) = true, (gogoproto.customtype) = "string"];
+    string description = 5 ;
     google.protobuf.Timestamp createdDate = 6;
     google.protobuf.Timestamp modifiedDate = 7;
     string toUser = 8;
