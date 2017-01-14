@@ -1,13 +1,14 @@
 package main
 
 import (
-	options "api-gateway/service/third_party/google/api"
+	options "api-gateway/third_party/google/api"
 	"api-gateway/types"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
@@ -34,9 +35,10 @@ func main() {
 						if err == nil {
 							//exts = append(exts, ext)
 							method := types.MethodWrapper{}
-							method.Package = allProtoBuff.Package
-							method.Service = service.Name
-							method.Method = md.Name
+							method.Package = *allProtoBuff.Package
+							method.Service = *service.Name
+							method.Method = md
+
 							pattern := types.Pattern{}
 							rule := ext.(*options.HttpRule)
 							pattern.Verb = getVerb(rule)
@@ -55,7 +57,10 @@ func main() {
 	if err != nil {
 		log.Println("json.Marshal eror", err)
 	}
-	os.Stdout.Write(jsonOut)
+	f, _ := os.Create("parse.json")
+	str := strconv.Quote(string(jsonOut))
+	f.WriteString(str)
+	//os.Stdout.Write(jsonOut)
 }
 
 func getVerb(opts *options.HttpRule) string {

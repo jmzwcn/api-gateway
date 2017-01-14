@@ -1,9 +1,11 @@
 package types
 
+import "github.com/golang/protobuf/protoc-gen-go/descriptor"
+
 type MethodWrapper struct {
-	Package *string
-	Service *string
-	Method  *string
+	Package string
+	Service string
+	Method  *descriptor.MethodDescriptorProto
 	Pattern *Pattern
 }
 

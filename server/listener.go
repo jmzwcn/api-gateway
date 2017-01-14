@@ -20,8 +20,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	resp, err := handleForward(ctx, r)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		io.WriteString(w, err.Error())
 	} else {
-		io.WriteString(w, "hello, world! == Response: "+*resp)
+		io.WriteString(w, "Response: "+resp)
 	}
 }

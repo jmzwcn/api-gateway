@@ -1,0 +1,35 @@
+syntax = "proto3";
+package lovev;
+
+import "google/api/annotations.proto";
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "google/protobuf/empty.proto";
+
+option (gogoproto.marshaler_all) = false;
+option (gogoproto.sizer_all) = false;
+option (gogoproto.unmarshaler_all) = false;
+
+
+service Profile {
+
+    rpc Get(ProfileRequest) returns (ProfileModel) {
+        option (google.api.http) = {
+            post: "/my/profiles"
+            body: "*"
+        };
+    }
+
+}
+
+message ProfileModel {
+    string name = 1;
+    string value = 2;
+}
+
+message ListProfileReply {
+    repeated ProfileModel data = 1;
+}
+
+message ProfileRequest {
+    string name = 1;
+}

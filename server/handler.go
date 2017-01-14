@@ -1,40 +1,66 @@
 package server
 
 import (
+	"api-gateway/loader"
+	"api-gateway/types"
 	"context"
 	"io/ioutil"
 	"log"
-	"lovev/api"
 	"net/http"
+	"reflect"
+
 	"strings"
 
+	"errors"
+
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 )
 
-func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (*string, error) {
-	out := new(lovev.ProfileModel)
-	//out := new(proto.Message)
+func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (string, error) {
+	method := getPBMethod(req.Method, req.RequestURI)
+	if method == nil || method.Method == nil {
+		errStr := "URL:" + req.RequestURI + " not found."
+		return errStr, errors.New(errStr)
+	}
+	inputType := method.Method.GetInputType()
+	typeName := strings.TrimLeft(inputType, ".")
+	//log.Println(proto.MessageType(typeName))
+	outputType := method.Method.GetOutputType()
+	outTtypeName := strings.TrimLeft(outputType, ".")
+	protoRes := reflect.New(proto.MessageType(outTtypeName).Elem()).Interface().(proto.Message)
+	//out := new(any.Any)
 	rpcConn, err := grpc.Dial("127.0.0.1:9090", []grpc.DialOption{grpc.WithInsecure()}...)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	var protoReq lovev.ProfileRequest
+	protoReq := reflect.New(proto.MessageType(typeName).Elem()).Interface().(proto.Message)
 
 	body, _ := ioutil.ReadAll(req.Body)
 	log.Println(string(body))
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	err = unmarshaler.Unmarshal(strings.NewReader(string(body)), &protoReq)
+	err = jsonpb.UnmarshalString(string(body), protoReq)
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(protoReq)
-
-	err = grpc.Invoke(ctx, "/lovev.Profile/Get", &protoReq, out, rpcConn, opts...)
+	//log.Println(protoReq)
+	rpcURL := "/" + method.Package + "." + method.Service + "/" + *method.Method.Name
+	log.Println(rpcURL)
+	err = grpc.Invoke(ctx, rpcURL, protoReq, protoRes, rpcConn, opts...)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	str := (*out).String()
-	return &str, nil
+	return new(jsonpb.Marshaler).MarshalToString(protoRes)
+}
+
+func getPBMethod(method, path string) *types.MethodWrapper {
+	key := method + ":" + path
+	log.Println("key", key)
+	methodWrapper := loader.RuleStore[key] //TODO enhance with regular express
+	if &methodWrapper != nil {
+		return &methodWrapper
+	}
+	log.Println(key + " not been found.")
+	return nil
 }
