@@ -1,18 +1,19 @@
-API Gateway
+#API Gateway
 
 A gateway to automaticly provide RESTful API for gRPC
 
-Usage:
 
-1.Go get https://github.com/jmzwcn/api-gateway.git;
+##Usage:
 
-2.Tell protos where you will RESTful: e.g. put them into service direcotry;
+1.Clone code: [git clone https://github.com/jmzwcn/api-gateway.git];
 
-3.Run "make";
+2.Tell protos where you want RESTful: e.g. put them into service direcotry;
 
-4.Execute "api-gateway" in CMD.
+3.Run "api-gateway" after make;
 
-How to define RESTful in *.proto: Add a [custom option](https://cloud.google.com/service-management/reference/rpc/google.api#http)
+4.Try the URL in your proto.
+
+How to define RESTful in *.proto: [custom option](https://cloud.google.com/service-management/reference/rpc/google.api#http)
    your_service.proto:
    ```diff
     syntax = "proto3";
