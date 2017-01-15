@@ -1,16 +1,16 @@
 # Variables
 GOCMD=go
-
+PROTOC=protoc-3.1.0-linux-x86_64/bin/protoc
 
 build:	parse generate init-pb
 	$(GOCMD) build cmd/api-gateway.go
 
 parse:
 	$(GOCMD) build api-gateway/plugin/protoc-gen-parse
-	protoc -I. -Ithird_party --plugin=protoc-gen-parse --parse_out=. service/*.proto
+	$(PROTOC) -I. -Ithird_party --plugin=protoc-gen-parse --parse_out=. service/*.proto
 
 generate:
-	protoc -Ithird_party -I.  --go_out=plugins=grpc:.  service/*.proto
+	$(PROTOC) -Ithird_party -I.  --go_out=plugins=grpc:.  service/*.proto
 	sed -i '/google\/api/d' service/*.pb.go
 
 LIST = `ls service/*.proto`

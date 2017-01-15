@@ -7,7 +7,7 @@ A gateway to automaticly provide RESTful API for gRPC
 
 1.Clone code: [git clone https://github.com/jmzwcn/api-gateway.git];
 
-2.Tell protos where you want RESTful: e.g. put them into service direcotry;
+2.Tell protos where you want RESTful: e.g. put them into service directory;
 
 3.Run "api-gateway" after make;
 
