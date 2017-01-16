@@ -32,11 +32,6 @@ import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/golang/protobuf/ptypes/empty"
 
-import (
-	context "golang.org/x/net/context"
-	grpc "google.golang.org/grpc"
-)
-
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
@@ -108,78 +103,6 @@ func init() {
 	proto.RegisterType((*ProfileModel)(nil), "lovev.ProfileModel")
 	proto.RegisterType((*ListProfileReply)(nil), "lovev.ListProfileReply")
 	proto.RegisterType((*ProfileRequest)(nil), "lovev.ProfileRequest")
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConn
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion4
-
-// Client API for Profile service
-
-type ProfileClient interface {
-	Get(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileModel, error)
-}
-
-type profileClient struct {
-	cc *grpc.ClientConn
-}
-
-func NewProfileClient(cc *grpc.ClientConn) ProfileClient {
-	return &profileClient{cc}
-}
-
-func (c *profileClient) Get(ctx context.Context, in *ProfileRequest, opts ...grpc.CallOption) (*ProfileModel, error) {
-	out := new(ProfileModel)
-	err := grpc.Invoke(ctx, "/lovev.Profile/Get", in, out, c.cc, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Server API for Profile service
-
-type ProfileServer interface {
-	Get(context.Context, *ProfileRequest) (*ProfileModel, error)
-}
-
-func RegisterProfileServer(s *grpc.Server, srv ProfileServer) {
-	s.RegisterService(&_Profile_serviceDesc, srv)
-}
-
-func _Profile_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProfileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProfileServer).Get(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/lovev.Profile/Get",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProfileServer).Get(ctx, req.(*ProfileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Profile_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "lovev.Profile",
-	HandlerType: (*ProfileServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "Get",
-			Handler:    _Profile_Get_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "service/test.proto",
 }
 
 func init() { proto.RegisterFile("service/test.proto", fileDescriptor0) }

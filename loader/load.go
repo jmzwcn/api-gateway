@@ -10,7 +10,6 @@ var RuleStore = make(map[string]types.MethodWrapper)
 
 func ParseAndLoad() {
 	load()
-	initPB()
 }
 
 func load() {

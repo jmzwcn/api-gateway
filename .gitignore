@@ -1,5 +1,5 @@
 # General
 !plugin/
 debug
-protoc-gen-parse
+api-gateway
 \.vscode
