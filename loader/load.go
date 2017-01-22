@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-var RuleStore = make(map[string]types.MethodWrapper)
+var RuleStore = types.CreateRuleStore()
 
 func ParseAndLoad() {
 	load()
@@ -23,6 +23,6 @@ func load() {
 	for _, md := range methods {
 		key := md.Pattern.Verb + ":" + md.Pattern.Path
 		log.Println(key, md)
-		RuleStore[key] = md
+		RuleStore.Store[key] = md
 	}
 }

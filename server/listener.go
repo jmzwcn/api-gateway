@@ -1,6 +1,7 @@
 package server
 
 import (
+	"api-gateway/config"
 	"context"
 	"io"
 	"log"
@@ -10,7 +11,11 @@ import (
 func Listen() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
-	if err := http.ListenAndServe(":6060", mux); err != nil {
+	port := config.NewConfiguration().Port
+	if port == "" {
+		port = "8080"
+	}
+	if err := http.ListenAndServe(":"+port, mux); err != nil {
 		log.Fatal(err)
 	}
 }

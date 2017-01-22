@@ -4,14 +4,12 @@ import (
 	"api-gateway/loader"
 	"api-gateway/types"
 	"context"
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
-
 	"strings"
-
-	"errors"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
@@ -57,7 +55,7 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 func getPBMethod(method, path string) *types.MethodWrapper {
 	key := method + ":" + path
 	log.Println("key", key)
-	methodWrapper := loader.RuleStore[key] //TODO enhance with regular express
+	methodWrapper := loader.RuleStore.Compile(key)
 	if &methodWrapper != nil {
 		return &methodWrapper
 	}
