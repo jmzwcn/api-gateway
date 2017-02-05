@@ -5,7 +5,7 @@ A gateway to automaticly provide RESTful API for gRPC
 
 ##Usage:
 
-1.Clone code: [git clone https://github.com/jmzwcn/api-gateway.git];
+1.Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
 
 2.Tell protos where you want RESTful: e.g. put them into service directory;
 
