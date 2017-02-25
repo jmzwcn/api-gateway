@@ -16,7 +16,7 @@ A gateway to automaticly provide RESTful API for gRPC
 How to define RESTful in *.proto: [custom option](https://cloud.google.com/service-management/reference/rpc/google.api#http)
    
    your_service.proto:
-   ```diff
+   ```protobuf
     syntax = "proto3";
     package example;
    +
@@ -36,3 +36,4 @@ How to define RESTful in *.proto: [custom option](https://cloud.google.com/servi
    +  }
     }
    ```
+   
