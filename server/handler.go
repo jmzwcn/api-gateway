@@ -16,11 +16,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	RPC_SERVER = "localhost:9090" // e.g:service:9090
+)
+
 func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (string, error) {
-	method := MetchMethod(req.Method, req.URL.Path)
-	if method == nil || method.Method == nil {
-		errStr := "URL:" + req.RequestURI + " not found."
-		return errStr, errors.New(errStr)
+	method, err := searchMethod(req.Method, req.URL.Path)
+	if err != nil {
+		return "", err
 	}
 	inputType := method.Method.GetInputType()
 	typeName := strings.TrimLeft(inputType, ".")
@@ -29,7 +32,7 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	outTtypeName := strings.TrimLeft(outputType, ".")
 	protoRes := reflect.New(proto.MessageType(outTtypeName).Elem()).Interface().(proto.Message)
 	//out := new(any.Any)
-	rpcConn, err := grpc.Dial("127.0.0.1:9090", []grpc.DialOption{grpc.WithInsecure()}...)
+	rpcConn, err := grpc.Dial(RPC_SERVER, []grpc.DialOption{grpc.WithInsecure()}...)
 	if err != nil {
 		return "", err
 	}
@@ -38,11 +41,13 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 	body, _ := ioutil.ReadAll(req.Body)
 	log.Debug(string(body))
-	err = jsonpb.UnmarshalString(string(body), protoReq)
+	req.ParseForm()
+	jsonContent := mergeToBody(string(body), method.MergeValue, req)
+	log.Debug("jsonContent:" + jsonContent)
+	err = jsonpb.UnmarshalString(jsonContent, protoReq)
 	if err != nil {
 		log.Error(err)
 	}
-	//log.Println(protoReq)
 	rpcURL := "/" + method.Package + "." + method.Service + "/" + *method.Method.Name
 	log.Debug(rpcURL)
 	err = grpc.Invoke(ctx, rpcURL, protoReq, protoRes, rpcConn, opts...)
@@ -52,13 +57,20 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	return new(jsonpb.Marshaler).MarshalToString(protoRes)
 }
 
-func MetchMethod(method, path string) *types.MatchedMethod {
+func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	key := method + ":" + path
 	log.Debug("key", key)
-	methodWrapper := loader.RuleStore.Match(key)
-	if &methodWrapper != nil {
-		return methodWrapper
+	matchedMethod := loader.RuleStore.Match(key)
+	if matchedMethod != nil {
+		return matchedMethod, nil
 	}
-	log.Debug(key + " not been found.")
-	return nil
+	return nil, errors.New(key + " not been found.")
+}
+
+func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
+	queryValue := ""
+	for k, v := range req.Form {
+		queryValue = queryValue + ",\"" + k + "\":\"" + v[0] + "\""
+	}
+	return strings.TrimSuffix(bodyValue, "}") + pathValue + queryValue + "}"
 }

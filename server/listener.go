@@ -12,9 +12,6 @@ func Listen() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 	port := config.NewConfiguration().Port
-	if port == "" {
-		port = "8080"
-	}
 	if err := http.ListenAndServe(":"+port, mux); err != nil {
 		log.Fatal(err)
 	}

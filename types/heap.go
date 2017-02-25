@@ -6,10 +6,10 @@ func (pq *PrecisionSet) Max() *MatchedMethod {
 	if pq == nil || *pq == nil {
 		return nil
 	}
-	max := (*pq)[0]
-	for i := 1; i < len(*pq); i++ {
+	max := new(MatchedMethod)
+	for i := 0; i < len(*pq); i++ {
 		current := (*pq)[i]
-		if max.precision < current.precision {
+		if max.Precision < current.Precision {
 			max = current
 		}
 	}

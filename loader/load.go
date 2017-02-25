@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 )
 
-var RuleStore = types.CreateRuleStore()
+var RuleStore = make(types.RuleStore)
 
 func ParseAndLoad() {
 	load()
@@ -23,6 +23,6 @@ func load() {
 	for _, md := range methods {
 		key := md.Pattern.Verb + ":" + md.Pattern.Path
 		log.Debug(key, md)
-		RuleStore.Store[key] = md
+		RuleStore[key] = md
 	}
 }

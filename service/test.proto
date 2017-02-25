@@ -19,6 +19,14 @@ service Profile {
         };
     }
 
+
+    rpc Test(ProfileRequest) returns (ProfileModel) {
+        option (google.api.http) = {
+            post: "/my/profiles/{value}"
+            body: "*"
+        };
+    }
+
 }
 
 message ProfileModel {
@@ -32,4 +40,5 @@ message ListProfileReply {
 
 message ProfileRequest {
     string name = 1;
+    string value = 2;
 }
