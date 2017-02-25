@@ -1,9 +1,9 @@
 package loader
 
 import (
+	"api-gateway/common"
 	"api-gateway/types"
 	"encoding/json"
-	"log"
 )
 
 var RuleStore = types.CreateRuleStore()
@@ -13,16 +13,16 @@ func ParseAndLoad() {
 }
 
 func load() {
-	log.Println(PROTO_JSON)
+	log.Debug(PROTO_JSON)
 	var methods []types.MethodWrapper
 	err := json.Unmarshal([]byte(string(PROTO_JSON)), &methods)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 
 	for _, md := range methods {
 		key := md.Pattern.Verb + ":" + md.Pattern.Path
-		log.Println(key, md)
+		log.Debug(key, md)
 		RuleStore.Store[key] = md
 	}
 }

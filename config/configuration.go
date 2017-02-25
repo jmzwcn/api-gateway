@@ -1,8 +1,8 @@
 package config
 
 import (
+	"api-gateway/common"
 	"encoding/json"
-	"log"
 	"os"
 )
 
@@ -22,11 +22,11 @@ func NewConfiguration() *Configuration {
 func (config *Configuration) parse() {
 	configFile, err := os.Open(DEFAULT_CONFIG_FILE_NAME)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 
 	jsonParser := json.NewDecoder(configFile)
 	if err = jsonParser.Decode(config); err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 }

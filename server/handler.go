@@ -1,12 +1,12 @@
 package server
 
 import (
+	"api-gateway/common"
 	"api-gateway/loader"
 	"api-gateway/types"
 	"context"
 	"errors"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -17,14 +17,14 @@ import (
 )
 
 func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (string, error) {
-	method := getPBMethod(req.Method, req.RequestURI)
+	method := MetchMethod(req.Method, req.URL.Path)
 	if method == nil || method.Method == nil {
 		errStr := "URL:" + req.RequestURI + " not found."
 		return errStr, errors.New(errStr)
 	}
 	inputType := method.Method.GetInputType()
 	typeName := strings.TrimLeft(inputType, ".")
-	//log.Println(proto.MessageType(typeName))
+	//log.Debug(proto.MessageType(typeName))
 	outputType := method.Method.GetOutputType()
 	outTtypeName := strings.TrimLeft(outputType, ".")
 	protoRes := reflect.New(proto.MessageType(outTtypeName).Elem()).Interface().(proto.Message)
@@ -37,14 +37,14 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	protoReq := reflect.New(proto.MessageType(typeName).Elem()).Interface().(proto.Message)
 
 	body, _ := ioutil.ReadAll(req.Body)
-	log.Println(string(body))
+	log.Debug(string(body))
 	err = jsonpb.UnmarshalString(string(body), protoReq)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 	}
 	//log.Println(protoReq)
 	rpcURL := "/" + method.Package + "." + method.Service + "/" + *method.Method.Name
-	log.Println(rpcURL)
+	log.Debug(rpcURL)
 	err = grpc.Invoke(ctx, rpcURL, protoReq, protoRes, rpcConn, opts...)
 	if err != nil {
 		return "", err
@@ -52,13 +52,13 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	return new(jsonpb.Marshaler).MarshalToString(protoRes)
 }
 
-func getPBMethod(method, path string) *types.MethodWrapper {
+func MetchMethod(method, path string) *types.MatchedMethod {
 	key := method + ":" + path
-	log.Println("key", key)
-	methodWrapper := loader.RuleStore.Compile(key)
+	log.Debug("key", key)
+	methodWrapper := loader.RuleStore.Match(key)
 	if &methodWrapper != nil {
-		return &methodWrapper
+		return methodWrapper
 	}
-	log.Println(key + " not been found.")
+	log.Debug(key + " not been found.")
 	return nil
 }

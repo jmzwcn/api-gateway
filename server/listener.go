@@ -1,10 +1,10 @@
 package server
 
 import (
+	"api-gateway/common"
 	"api-gateway/config"
 	"context"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -25,7 +25,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 	resp, err := handleForward(ctx, r)
 	if err != nil {
-		log.Println(err)
+		log.Error(err)
 		io.WriteString(w, err.Error())
 	} else {
 		io.WriteString(w, "Response: "+resp)

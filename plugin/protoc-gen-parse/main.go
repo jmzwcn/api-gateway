@@ -1,12 +1,11 @@
 package main
 
 import (
+	"api-gateway/common"
 	options "api-gateway/third_party/google/api"
 	"api-gateway/types"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 
@@ -17,12 +16,12 @@ import (
 func main() {
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
-		fmt.Println("error reading input")
+		log.Error("error reading input")
 	}
 
 	request := new(plugin.CodeGeneratorRequest)
 	if err := proto.Unmarshal(data, request); err != nil {
-		fmt.Println(err)
+		log.Error(err)
 	}
 
 	var methods []types.MethodWrapper
@@ -55,7 +54,7 @@ func main() {
 
 	jsonOut, err := json.Marshal(methods)
 	if err != nil {
-		log.Println("json.Marshal eror", err)
+		log.Error("json.Marshal eror", err)
 	}
 	f, _ := os.Create("parse.json")
 	str := strconv.Quote(string(jsonOut))
