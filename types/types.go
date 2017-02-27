@@ -16,4 +16,3 @@ type Pattern struct {
 	Path string
 	Body string
 }
-

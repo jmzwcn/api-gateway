@@ -17,7 +17,7 @@ func (rs RuleStore) Match(key string) *MatchedMethod {
 	if v, ok := rs[key]; ok {
 		return &MatchedMethod{MethodWrapper: v}
 	}
-	precisionSet := new(PrecisionSet)
+	ps := new(PrecisionSet)
 	paths := strings.Split(key, "/")
 
 	for keyInDef, methodWrapper := range rs {
@@ -38,9 +38,9 @@ func (rs RuleStore) Match(key string) *MatchedMethod {
 			}
 			method := MatchedMethod{Precision: precision, MergeValue: value, MethodWrapper: methodWrapper}
 			log.Debug(method)
-			*precisionSet = append(*precisionSet, &method)
+			*ps = append(*ps, &method)
 		}
 	NEXT_LOOP:
 	}
-	return precisionSet.Max()
+	return ps.Max()
 }

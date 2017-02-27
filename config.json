@@ -1,4 +1,13 @@
 {
-    "port": "6060",
-    "TODO.***": "***"
+    "port": "8080",
+    "proto.set": [
+        {
+            "service": "echo",
+            "path": "/home/jmzwcn/work/src/api-gateway/example/echo/api"
+        },
+        {
+            "service": "helloworld",
+            "path": "/home/jmzwcn/work/src/api-gateway/example/helloworld/service"
+        }
+    ]
 }

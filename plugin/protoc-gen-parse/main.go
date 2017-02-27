@@ -59,7 +59,6 @@ func main() {
 	f, _ := os.Create("parse.json")
 	str := strconv.Quote(string(jsonOut))
 	f.WriteString(str)
-	//os.Stdout.Write(jsonOut)
 }
 
 func getVerb(opts *options.HttpRule) string {
@@ -67,19 +66,14 @@ func getVerb(opts *options.HttpRule) string {
 	switch {
 	case opts.GetGet() != "":
 		httpMethod = "GET"
-		//pathTemplate = opts.GetPut()
 	case opts.GetPost() != "":
 		httpMethod = "POST"
-		//pathTemplate = opts.GetPut()
 	case opts.GetPut() != "":
 		httpMethod = "PUT"
-	//pathTemplate = opts.GetPut()
 	case opts.GetDelete() != "":
 		httpMethod = "DELETE"
-	//pathTemplate = opts.GetPut()
 	case opts.GetPatch() != "":
 		httpMethod = "PATCH"
-		//pathTemplate = opts.GetPut()
 	}
 	return httpMethod
 }
