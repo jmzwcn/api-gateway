@@ -9,7 +9,6 @@ source:
 	echo "copy source...";\
 	protoset=`cat config.json|awk -F"[proto.set]" '/path|service/{print$0}'`;\
 	aa=`echo $$protoset | sed s/[[:space:]]//g`;\
-	bb=$${aa//\"\"/ };\
 	for i in $${aa//\"\"/ }; do \
 	j=$${i//\"/};\
 	k=$${j//service:/};\
@@ -25,7 +24,6 @@ parse:
 	$(GOCMD) build api-gateway/plugin/protoc-gen-parse
 	protoset=`cat config.json|awk -F"[proto.set]" '/path|service/{print$0}'`;\
 	aa=`echo $$protoset | sed s/[[:space:]]//g`;\
-	bb=$${aa//\"\"/ };\
 	proto_dir="";\
 	for i in $${aa//\"\"/ }; do \
 	j=$${i//\"/};\
@@ -40,7 +38,6 @@ parse:
 generate:
 	protoset=`cat config.json|awk -F"[proto.set]" '/path|service/{print$0}'`;\
 	aa=`echo $$protoset | sed s/[[:space:]]//g`;\
-	bb=$${aa//\"\"/ };\
 	proto_dir="";\
 	for i in $${aa//\"\"/ }; do \
 	j=$${i//\"/};\
@@ -59,7 +56,6 @@ init-pb:
 #	echo 'import _ "api-gateway/service"'>> loader/initial.go;
 	protoset=`cat config.json|awk -F"[proto.set]" '/path|service/{print$0}'`;\
 	aa=`echo $$protoset | sed s/[[:space:]]//g`;\
-	bb=$${aa//\"\"/ };\
 	for i in $${aa//\"\"/ }; do \
 	j=$${i//\"/};\
 	k=$${j//service:/};\
