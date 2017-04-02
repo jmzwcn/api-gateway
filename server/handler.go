@@ -21,13 +21,15 @@ const (
 )
 
 func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (string, error) {
+	log.Debug("Header", req.Header)
+	body, _ := ioutil.ReadAll(req.Body)
+	log.Debug("Body", string(body))
+
 	method, err := searchMethod(req.Method, req.URL.Path)
 	if err != nil {
 		return "", err
 	}
 
-	body, _ := ioutil.ReadAll(req.Body)
-	log.Debug(string(body))
 	req.ParseForm()
 	jsonContent := mergeToBody(string(body), method.MergeValue, req)
 	log.Debug("jsonContent:" + jsonContent)
