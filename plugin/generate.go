@@ -65,7 +65,7 @@ func main() {
 	}
 
 	initialContent = initialContent + "const PROTO_JSON = " + string(bytess)
-	err = ioutil.WriteFile("loader/test.go", []byte(initialContent), 0644)
+	err = ioutil.WriteFile("loader/initial.go", []byte(initialContent), 0644)
 	if err != nil {
 		log.Error(err)
 	}

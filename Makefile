@@ -1,19 +1,30 @@
 # Variables
 GOCMD=go
-PROTOC=protoc/protoc-3.1.0-linux-x86_64/bin/protoc
 
-build:	parse prepare post-pb
+ifeq (${shell uname -s}, Darwin)
+	SED=gsed
+else
+	SED=sed
+endif
+
+build: init	parse generate post-pb
 	$(GOCMD) build cmd/api-gateway.go
+
+init: SHELL:=bash
+init:
+	@$(GOCMD) get google.golang.org/grpc
+	@$(GOCMD) get github.com/golang/protobuf/protoc-gen-go
+#	@$(GOCMD) get -u github.com/gogo/protobuf/protoc-gen-go{fast,gofast,gofaster,goslick}
 
 parse:
 	$(GOCMD) build api-gateway/plugin/protoc-gen-parse
 
-prepare:
-	$(GOCMD) run prepare.go
+generate:
+	$(GOCMD) run plugin/generate.go
 
 post-pb:
-#	echo 'import _ "api-gateway/service"'>> loader/initial.go;
-#	@rm parse.json protoc-gen-parse;
+	@$(SED) -i '/google\/api/d' service/*/*.pb.go
+	@rm parse.json protoc-gen-parse;
 
 devel:
 	build
