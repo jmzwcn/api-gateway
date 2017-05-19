@@ -11,7 +11,13 @@ const (
 )
 
 type Configuration struct {
-	Port string
+	Port     string
+	ProtoSet []Proto `json:"proto.set"`
+}
+
+type Proto struct {
+	Service string
+	Path    string
 }
 
 func NewConfiguration() *Configuration {
