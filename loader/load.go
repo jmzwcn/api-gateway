@@ -1,9 +1,10 @@
 package loader
 
 import (
-	"api-gateway/common"
-	"api-gateway/types"
 	"encoding/json"
+
+	"github.com/api-gateway/common"
+	"github.com/api-gateway/types"
 )
 
 var RuleStore = make(types.RuleStore)

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"api-gateway/common"
-	"api-gateway/loader"
-	"api-gateway/server"
+	"github.com/api-gateway/common"
+	"github.com/api-gateway/loader"
+	"github.com/api-gateway/server"
 )
 
 func main() {

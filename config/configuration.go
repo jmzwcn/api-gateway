@@ -1,9 +1,10 @@
 package config
 
 import (
-	"api-gateway/common"
 	"encoding/json"
 	"os"
+
+	"github.com/api-gateway/common"
 )
 
 const (

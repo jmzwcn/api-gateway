@@ -1,8 +1,9 @@
 package types
 
 import (
-	"api-gateway/common"
 	"strings"
+
+	"github.com/api-gateway/common"
 )
 
 type RuleStore map[string]MethodWrapper

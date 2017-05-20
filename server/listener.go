@@ -1,11 +1,12 @@
 package server
 
 import (
-	"api-gateway/common"
-	"api-gateway/config"
 	"context"
 	"io"
 	"net/http"
+
+	"github.com/api-gateway/common"
+	"github.com/api-gateway/config"
 )
 
 func Listen() {

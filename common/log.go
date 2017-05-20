@@ -1,22 +1,23 @@
 package log
 
-import "log"
+import (
+	log "github.com/Sirupsen/logrus"
+)
 
-//TODO
 func Debug(v ...interface{}) {
-	log.Println(v)
+	log.Debug(v)
 }
 
 func Info(v ...interface{}) {
-	log.Println(v)
+	log.Info(v)
 }
 
 func Warn(v ...interface{}) {
-	log.Println(v)
+	log.Warn(v)
 }
 
 func Error(v ...interface{}) {
-	log.Println(v)
+	log.Error(v)
 }
 
 func Fatal(v ...interface{}) {

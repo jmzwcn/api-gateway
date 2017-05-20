@@ -1,15 +1,16 @@
 package server
 
 import (
-	"api-gateway/common"
-	"api-gateway/loader"
-	"api-gateway/types"
 	"context"
 	"errors"
 	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
+
+	"github.com/api-gateway/common"
+	"github.com/api-gateway/loader"
+	"github.com/api-gateway/types"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"

@@ -1,13 +1,14 @@
 package main
 
 import (
-	"api-gateway/common"
-	options "api-gateway/third_party/google/api"
-	"api-gateway/types"
 	"encoding/json"
 	"io/ioutil"
 	"os"
 	"strconv"
+
+	"github.com/api-gateway/common"
+	options "github.com/api-gateway/third_party/google/api"
+	"github.com/api-gateway/types"
 
 	"github.com/golang/protobuf/proto"
 	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
