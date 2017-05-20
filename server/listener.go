@@ -13,6 +13,7 @@ func Listen() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 	port := config.NewConfiguration().Port
+	log.Info("Listening on port:" + port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {
 		log.Fatal(err)
 	}
@@ -26,6 +27,6 @@ func handler(w http.ResponseWriter, r *http.Request) {
 		log.Error(err)
 		io.WriteString(w, err.Error())
 	} else {
-		io.WriteString(w, "Response: "+resp)
+		io.WriteString(w, resp)
 	}
 }

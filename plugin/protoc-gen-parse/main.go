@@ -42,7 +42,7 @@ func main() {
 							pattern := types.Pattern{}
 							rule := ext.(*options.HttpRule)
 							pattern.Verb = getVerb(rule)
-							pattern.Path = rule.GetGet() + rule.GetPost() + rule.GetPut() + rule.GetDelete()
+							pattern.Path = rule.GetGet() + rule.GetPost() + rule.GetPut() + rule.GetDelete() + rule.GetPatch()
 							pattern.Body = rule.Body
 							method.Pattern = &pattern
 							methods = append(methods, method)

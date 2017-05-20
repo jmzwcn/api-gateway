@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	log.Debug("API Gateway Start...")
+	log.Info("API-Gateway start...")
 	loader.ParseAndLoad()
 	server.Listen()
 }
