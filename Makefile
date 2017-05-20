@@ -15,8 +15,8 @@ prepare: SHELL:=bash
 prepare:
 	@echo "Downloading dependency..."
 	@$(GOCMD) get google.golang.org/grpc
-	@$(GOCMD) get github.com/golang/protobuf/protoc-gen-go
-#	@$(GOCMD) get -u github.com/gogo/protobuf/protoc-gen-go{fast,gofast,gofaster,goslick}
+#	@$(GOCMD) get github.com/golang/protobuf/protoc-gen-go
+	@$(GOCMD) get -u github.com/gogo/protobuf/protoc-gen-go{fast,gofast,gofaster,goslick}
 
 parse:
 	$(GOCMD) build github.com/api-gateway/plugin/protoc-gen-parse

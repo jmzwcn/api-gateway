@@ -38,7 +38,7 @@ func main() {
 				protoFiles = append(protoFiles, destinationDir+"/"+obj.Name())
 				copyFile(directory.Name()+"/"+obj.Name(), destinationDir+"/"+obj.Name())
 
-				args := append([]string{"-I.", "-Ithird_party", "--go_out=."}, destinationDir+"/"+obj.Name())
+				args := append([]string{"-I.", "-Ithird_party", "--gogofast_out=plugins=grpc:."}, destinationDir+"/"+obj.Name())
 				if cmdOut, err = exec.Command("protoc", args...).CombinedOutput(); err != nil {
 					log.Error(err, string(cmdOut))
 				}
