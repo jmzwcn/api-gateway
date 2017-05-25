@@ -3,7 +3,8 @@
     "proto.set": [
         {
             "service": "echo",
-            "path": "github.com/api-gateway/example/echo/api"
+            "path": "github.com/api-gateway/example/echo/api",
+            "_comment": "path's base dir is ${GOPATH}"
         },
         {
             "service": "helloworld",
