@@ -3,11 +3,11 @@
     "proto.set": [
         {
             "service": "echo",
-            "path": "/home/jmzwcn/go/src/github.com/api-gateway/example/echo/api"
+            "path": "github.com/api-gateway/example/echo/api"
         },
         {
             "service": "helloworld",
-            "path": "/home/jmzwcn/go/src/github.com/api-gateway/example/helloworld/service"
+            "path": "github.com/api-gateway/example/helloworld/service"
         }
     ]
 }

@@ -28,7 +28,7 @@ func main() {
 		destinationDir := "service/" + proto.Service
 		os.MkdirAll(destinationDir, os.ModePerm)
 
-		directory, err := os.Open(proto.Path)
+		directory, err := os.Open("../../" + proto.Path)
 		if err != nil {
 			log.Error(err)
 		}
@@ -37,14 +37,16 @@ func main() {
 			if !obj.IsDir() && strings.HasSuffix(obj.Name(), "proto") {
 				protoFiles = append(protoFiles, destinationDir+"/"+obj.Name())
 				copyFile(directory.Name()+"/"+obj.Name(), destinationDir+"/"+obj.Name())
-
-				args := append([]string{"-I.", "-Ithird_party", "--gogofast_out=plugins=grpc:."}, destinationDir+"/"+obj.Name())
+				// don't compile locally
+				/*args := append([]string{"-I.", "-Ithird_party", "--gogofast_out=plugins=grpc:."}, destinationDir+"/"+obj.Name())
 				if cmdOut, err = exec.Command("protoc", args...).CombinedOutput(); err != nil {
 					log.Error(err, string(cmdOut))
-				}
+				}*/
 			}
 		}
-		initialContent = initialContent + "import _ \"github.com/api-gateway/service/" + proto.Service + "\"\n"
+		//"import _ \"github.com/api-gateway/service/" + proto.Service + "\"\n"
+		importPath := "import _ \"" + proto.Path + "\"\n" //make sure .proto having been compiled to *.pb.go
+		initialContent = initialContent + importPath
 	}
 
 	args := append([]string{"-I.", "-Ithird_party", "--plugin=protoc-gen-parse", "--parse_out=."}, protoFiles...)

@@ -26,7 +26,7 @@ generate:
 	$(GOCMD) run plugin/generate.go --protoc=$(PROTOC)
 
 post-pb:
-	@$(SED) -i '/google\/api/d' service/*/*.pb.go
+#	@$(SED) -i '/google\/api/d' service/*/*.pb.go
 	@rm parse.json protoc-gen-parse;
 
 devel:
