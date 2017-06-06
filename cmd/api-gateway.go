@@ -7,8 +7,6 @@ import (
 	"github.com/api-gateway/common"
 	"github.com/api-gateway/loader"
 	"github.com/api-gateway/server"
-
-	_ "github.com/api-gateway/example/echo/api"
 )
 
 var hostBind, logLevel string

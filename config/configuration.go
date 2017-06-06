@@ -29,12 +29,11 @@ func NewConfiguration() *Configuration {
 func (config *Configuration) parse() {
 	configFile, err := os.Open(DEFAULT_CONFIG_FILE_NAME)
 	if err != nil {
-		log.Error(err, ", will use the default.")
+		log.Error(err)
 	} else {
 		jsonParser := json.NewDecoder(configFile)
 		if err = jsonParser.Decode(config); err != nil {
 			log.Error(err)
 		}
 	}
-	log.Debug("Current config:", *config)
 }
