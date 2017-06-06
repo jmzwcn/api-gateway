@@ -47,11 +47,17 @@ func main() {
 		//"import _ \"github.com/api-gateway/service/" + proto.Service + "\"\n"
 		importPath := "import _ \"" + proto.Path + "\"\n" //make sure .proto having been compiled to *.pb.go
 		initialContent = initialContent + importPath
-	}
 
-	args := append([]string{"-I.", "-Ithird_party", "--plugin=protoc-gen-parse", "--parse_out=."}, protoFiles...)
-	if cmdOut, err = exec.Command("protoc", args...).CombinedOutput(); err != nil {
-		log.Error(err, string(cmdOut))
+		for _, obj := range objects {
+			if !obj.IsDir() && strings.HasSuffix(obj.Name(), "proto") {
+				//protoFiles = append(protoFiles, destinationDir+"/"+obj.Name())
+
+				args := append([]string{"-I.:" + destinationDir, "-Ithird_party" /*"-I../../",*/, "-I../../github.com/gogo/protobuf/", "--plugin=protoc-gen-parse", "--parse_out=."}, destinationDir+"/"+obj.Name())
+				if cmdOut, err = exec.Command("protoc", args...).CombinedOutput(); err != nil {
+					log.Error(err, string(cmdOut))
+				}
+			}
+		}
 	}
 
 	bytes, err := ioutil.ReadFile("parse.json")

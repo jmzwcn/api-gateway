@@ -4,7 +4,7 @@
         {
             "service": "echo",
             "path": "github.com/api-gateway/example/echo/api",
-            "_comment": "path's base dir is ${GOPATH}"
+            "_comment": "path's base dir is ${GOPATH}/src"
         },
         {
             "service": "helloworld",

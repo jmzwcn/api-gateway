@@ -23,3 +23,11 @@ func Error(v ...interface{}) {
 func Fatal(v ...interface{}) {
 	log.Fatal(v)
 }
+
+func SetLevel(level string) {
+	if level, err := log.ParseLevel(level); err == nil {
+		log.SetLevel(level)
+	} else {
+		log.SetLevel(log.DebugLevel)
+	}
+}
