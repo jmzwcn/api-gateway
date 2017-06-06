@@ -14,7 +14,7 @@ func ParseAndLoad() {
 }
 
 func load() {
-	log.Debug(PROTO_JSON)
+	//log.Debug(PROTO_JSON)
 	var methods []types.MethodWrapper
 	err := json.Unmarshal([]byte(string(PROTO_JSON)), &methods)
 	if err != nil {
@@ -22,7 +22,8 @@ func load() {
 	}
 
 	for _, md := range methods {
-		key := md.Pattern.Verb + ":" + md.Pattern.Path
+		//key := md.Pattern.Verb + ":" + md.Pattern.Path
+		key := md.Pattern.Verb + ":/" + md.Package + md.Pattern.Path
 		log.Debug(key, md)
 		RuleStore[key] = md
 	}

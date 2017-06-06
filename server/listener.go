@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"io"
 	"net/http"
 
 	"google.golang.org/grpc/status"
@@ -31,12 +30,9 @@ func handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Error(err)
 		status, _ := status.FromError(err)
-		log.Debug(status)
-		w.WriteHeader(HTTPStatusFromCode(status.Code()))
-		//w.WriteHeader(500)
-		io.WriteString(w, err.Error())
+		http.Error(w, err.Error(), HTTPStatusFromCode(status.Code()))
 	} else {
-		//w.WriteHeader(http.StatusOK)
-		io.WriteString(w, resp)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(resp))
 	}
 }

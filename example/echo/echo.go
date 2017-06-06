@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	pb "api-gateway/example/echo/api"
+	pb "github.com/api-gateway/example/echo/api"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/golang/protobuf/ptypes/timestamp"

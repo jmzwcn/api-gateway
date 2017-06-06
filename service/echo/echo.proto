@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "gogoproto/gogo.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option (gogoproto.marshaler_all) = false;
+option (gogoproto.sizer_all) = false;
+option (gogoproto.unmarshaler_all) = false;
+
+package echo;
+
+service Echo {
+    rpc Ping (google.protobuf.Empty) returns (google.protobuf.Timestamp) {
+        option (google.api.http) = {
+            post: "/ping"
+            body: "*"
+        };
+    }
+
+    rpc Echo (EchoRequest) returns (EchoResponse) {
+        option (google.api.http) = {
+            post: "/echo"
+            body: "*"
+        };
+    }
+}
+
+message EchoRequest {
+    string text = 1;
+}
+
+message EchoResponse {
+    string text = 1;
+}

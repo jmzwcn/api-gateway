@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"reflect"
@@ -14,7 +13,10 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -61,7 +63,7 @@ func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	if matchedMethod != nil {
 		return matchedMethod, nil
 	}
-	return nil, errors.New(key + " not been found.")
+	return nil, status.Error(codes.NotFound, key+" not been found.")
 }
 
 func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
@@ -73,6 +75,11 @@ func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
 }
 
 func protoMessage(messageTypeName string) proto.Message {
-	messageType := proto.MessageType(strings.TrimLeft(messageTypeName, ".")).Elem()
+	//log.Debug(messageTypeName)
+	typeName := strings.TrimLeft(messageTypeName, ".")
+	//log.Debug(typeName)
+	mtype := proto.MessageType(typeName)
+	log.Debug(mtype)
+	messageType := mtype.Elem()
 	return reflect.New(messageType).Interface().(proto.Message)
 }

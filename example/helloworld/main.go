@@ -37,7 +37,7 @@ import (
 	"log"
 	"net"
 
-	pb "api-gateway/example/helloworld/service"
+	pb "github.com/api-gateway/example/helloworld/service"
 
 	"golang.org/x/net/context"
 
