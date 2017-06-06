@@ -24,7 +24,7 @@ func load() {
 	for _, md := range methods {
 		//key := md.Pattern.Verb + ":" + md.Pattern.Path
 		key := md.Pattern.Verb + ":/" + md.Package + md.Pattern.Path
-		log.Debug(key, md)
+		log.Debug(key, "->", md)
 		RuleStore[key] = md
 	}
 }

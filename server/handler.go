@@ -11,8 +11,8 @@ import (
 	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
 
+	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -28,17 +28,17 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	body, _ := ioutil.ReadAll(req.Body)
 	log.Debug("Body", string(body))
 
-	method, err := searchMethod(req.Method, req.URL.Path)
+	sm, err := searchMethod(req.Method, req.URL.Path)
 	if err != nil {
 		return "", err
 	}
 
 	req.ParseForm()
-	jsonContent := mergeToBody(string(body), method.MergeValue, req)
+	jsonContent := mergeToBody(string(body), sm.MergeValue, req)
 	log.Debug("jsonContent:" + jsonContent)
 
-	protoReq := protoMessage(method.Method.GetInputType())
-	protoRes := protoMessage(method.Method.GetOutputType())
+	protoReq := protoMessage(sm.Method.GetInputType())
+	protoRes := protoMessage(sm.Method.GetOutputType())
 	if err = jsonpb.UnmarshalString(jsonContent, protoReq); err != nil {
 		log.Error(err)
 	}
@@ -47,7 +47,7 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	if err != nil {
 		return "", err
 	}
-	requestURL := "/" + method.Package + "." + method.Service + "/" + *method.Method.Name
+	requestURL := "/" + sm.Package + "." + sm.Service + "/" + *sm.Method.Name
 	log.Debug(requestURL)
 
 	if err = grpc.Invoke(ctx, requestURL, protoReq, protoRes, rpcConn, opts...); err != nil {
@@ -75,11 +75,7 @@ func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
 }
 
 func protoMessage(messageTypeName string) proto.Message {
-	//log.Debug(messageTypeName)
 	typeName := strings.TrimLeft(messageTypeName, ".")
-	//log.Debug(typeName)
-	mtype := proto.MessageType(typeName)
-	log.Debug(mtype)
-	messageType := mtype.Elem()
-	return reflect.New(messageType).Interface().(proto.Message)
+	messageType := proto.MessageType(typeName)
+	return reflect.New(messageType.Elem()).Interface().(proto.Message)
 }

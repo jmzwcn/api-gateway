@@ -70,7 +70,6 @@ func (m *EchoResponse) GetText() string {
 func init() {
 	proto.RegisterType((*EchoRequest)(nil), "echo.EchoRequest")
 	proto.RegisterType((*EchoResponse)(nil), "echo.EchoResponse")
-        fmt.Println("tttaaa")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.

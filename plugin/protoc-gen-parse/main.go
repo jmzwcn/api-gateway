@@ -44,7 +44,7 @@ func main() {
 							pattern.Verb = getVerb(rule)
 							pattern.Path = rule.GetGet() + rule.GetPost() + rule.GetPut() + rule.GetDelete() + rule.GetPatch()
 							pattern.Body = rule.Body
-							method.Pattern = &pattern
+							method.Pattern = pattern
 							methods = append(methods, method)
 						}
 					}

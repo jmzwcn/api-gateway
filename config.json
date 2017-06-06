@@ -1,10 +1,9 @@
 {
-    "port": "8080",
+    "comment": "proto.set path's root dir is ${GOPATH}/src",
     "proto.set": [
         {
             "service": "echo",
-            "path": "github.com/api-gateway/example/echo/api",
-            "_comment": "path's base dir is ${GOPATH}/src"
+            "path": "github.com/api-gateway/example/echo/api"
         },
         {
             "service": "helloworld",

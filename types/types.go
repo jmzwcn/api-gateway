@@ -8,7 +8,7 @@ type MethodWrapper struct {
 	Package string
 	Service string
 	Method  *descriptor.MethodDescriptorProto
-	Pattern *Pattern
+	Pattern Pattern
 }
 
 type Pattern struct {

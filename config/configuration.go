@@ -12,7 +12,7 @@ const (
 )
 
 type Configuration struct {
-	Port     string
+	comment  string
 	ProtoSet []Proto `json:"proto.set"`
 }
 
@@ -29,7 +29,6 @@ func NewConfiguration() *Configuration {
 func (config *Configuration) parse() {
 	configFile, err := os.Open(DEFAULT_CONFIG_FILE_NAME)
 	if err != nil {
-		config.Port = "8080"
 		log.Error(err, ", will use the default.")
 	} else {
 		jsonParser := json.NewDecoder(configFile)

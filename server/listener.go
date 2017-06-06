@@ -7,15 +7,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/api-gateway/common"
-	"github.com/api-gateway/config"
 )
 
 func Listen(hostBind string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
-	if hostBind == "" {
-		hostBind = ":" + config.NewConfiguration().Port
-	}
 
 	log.Info("Listening on " + hostBind)
 	if err := http.ListenAndServe(hostBind, mux); err != nil {
