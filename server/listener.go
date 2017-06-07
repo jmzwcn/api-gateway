@@ -9,7 +9,7 @@ import (
 	"github.com/api-gateway/common"
 )
 
-func Listen(hostBind string) {
+func Run(hostBind string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 

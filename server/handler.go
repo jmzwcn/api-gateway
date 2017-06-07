@@ -11,16 +11,18 @@ import (
 	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
 
-	"github.com/gogo/protobuf/proto"
+	goproto "github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
+	"github.com/golang/protobuf/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-const (
-	RPC_SERVER = "localhost:50051" // e.g:grpc_service_name:50051
+var (
+	rpcHost = "localhost" // e.g:grpc_service_name
+	rpcPort = "50051"
 )
 
 func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (string, error) {
@@ -35,15 +37,16 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 	req.ParseForm()
 	jsonContent := mergeToBody(string(body), sm.MergeValue, req)
-	log.Debug("jsonContent:" + jsonContent)
+	log.Debug("jsonContent:", jsonContent)
 
 	protoReq := protoMessage(sm.Method.GetInputType())
 	protoRes := protoMessage(sm.Method.GetOutputType())
 	if err = jsonpb.UnmarshalString(jsonContent, protoReq); err != nil {
 		log.Error(err)
 	}
-
-	rpcConn, err := grpc.Dial(RPC_SERVER, grpc.WithInsecure())
+	//sm.package represents for module name by default, meaning service name
+	rpcServer := sm.Package + ":" + rpcPort
+	rpcConn, err := grpc.Dial(rpcServer, grpc.WithInsecure())
 	if err != nil {
 		return "", err
 	}
@@ -67,15 +70,22 @@ func searchMethod(method, path string) (*types.MatchedMethod, error) {
 }
 
 func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
+	if bodyValue == "" {
+		return ""
+	}
 	queryValue := ""
 	for k, v := range req.Form {
 		queryValue = queryValue + ",\"" + k + "\":\"" + v[0] + "\""
 	}
 	return strings.TrimSuffix(bodyValue, "}") + pathValue + queryValue + "}"
+
 }
 
 func protoMessage(messageTypeName string) proto.Message {
 	typeName := strings.TrimLeft(messageTypeName, ".")
 	messageType := proto.MessageType(typeName)
+	if messageType == nil {
+		messageType = goproto.MessageType(typeName)
+	}
 	return reflect.New(messageType.Elem()).Interface().(proto.Message)
 }

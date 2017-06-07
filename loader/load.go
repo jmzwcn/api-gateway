@@ -9,7 +9,7 @@ import (
 
 var RuleStore = make(types.RuleStore)
 
-func ParseAndLoad() {
+func Services() {
 	load()
 }
 

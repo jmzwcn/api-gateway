@@ -13,8 +13,8 @@ var hostBind, logLevel string
 
 func main() {
 	log.Info("API-Gateway start...")
-	loader.ParseAndLoad()
-	server.Listen(hostBind)
+	loader.Services()
+	server.Run(hostBind)
 }
 
 func init() {
