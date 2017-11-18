@@ -83,9 +83,9 @@ func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
 
 func protoMessage(messageTypeName string) proto.Message {
 	typeName := strings.TrimLeft(messageTypeName, ".")
-	messageType := proto.MessageType(typeName)
+	messageType := goproto.MessageType(typeName)
 	if messageType == nil {
-		messageType = goproto.MessageType(typeName)
+		messageType = proto.MessageType(typeName)
 	}
 	return reflect.New(messageType.Elem()).Interface().(proto.Message)
 }
