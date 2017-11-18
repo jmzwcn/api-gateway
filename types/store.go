@@ -29,8 +29,7 @@ func (rs RuleStore) Match(key string) *MatchedMethod {
 			for i := 0; i < len(paths); i++ {
 				if strings.HasPrefix(partsInDef[i], "{") {
 					property := strings.TrimSuffix(strings.TrimPrefix(partsInDef[i], "{"), "}")
-					value += ",\"" + property + "\":\"" + paths[i] + "\"" //string value
-					value += ",\"" + property + "\":" + paths[i]          //int|bool value
+					value += ",\"" + property + "\":\"" + paths[i] + "\"" + ",\"" + property + "\":" + paths[i]
 					precision++
 				} else if partsInDef[i] == paths[i] {
 					precision += 2

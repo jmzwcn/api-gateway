@@ -75,7 +75,7 @@ func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
 	}
 	queryValue := ""
 	for k, v := range req.Form {
-		queryValue = queryValue + ",\"" + k + "\":\"" + v[0] + "\""
+		queryValue = queryValue + ",\"" + k + "\":\"" + v[0] + "\"" + ",\"" + k + "\":" + v[0]
 	}
 	return strings.TrimSuffix(bodyValue, "}") + pathValue + queryValue + "}"
 
