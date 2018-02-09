@@ -1,18 +1,13 @@
 package types
 
 import (
+	"net/url"
 	"strings"
 
 	"github.com/api-gateway/common"
 )
 
 type RuleStore map[string]MethodWrapper
-
-type MatchedMethod struct {
-	MethodWrapper
-	Precision  int
-	MergeValue string //json format
-}
 
 func (rs RuleStore) Match(key string) *MatchedMethod {
 	if v, ok := rs[key]; ok {
@@ -24,20 +19,20 @@ func (rs RuleStore) Match(key string) *MatchedMethod {
 	for keyInDef, methodWrapper := range rs {
 		partsInDef := strings.Split(keyInDef, "/")
 		if len(paths) == len(partsInDef) {
-			value := ""
+			values := url.Values{}
 			precision := 0
 			for i := 0; i < len(paths); i++ {
 				if strings.HasPrefix(partsInDef[i], "{") {
 					property := strings.TrimSuffix(strings.TrimPrefix(partsInDef[i], "{"), "}")
-					value += ",\"" + property + "\":\"" + paths[i] + "\"" + ",\"" + property + "\":" + paths[i]
-					precision++
+					values[property] = []string{paths[i]}
+					precision = precision + 1
 				} else if partsInDef[i] == paths[i] {
-					precision += 2
+					precision = precision + 2
 				} else {
 					goto NEXT_LOOP
 				}
 			}
-			method := MatchedMethod{Precision: precision, MergeValue: value, MethodWrapper: methodWrapper}
+			method := MatchedMethod{Precision: precision, PathValues: values, MethodWrapper: methodWrapper}
 			log.Debug(method)
 			*ps = append(*ps, &method)
 		}

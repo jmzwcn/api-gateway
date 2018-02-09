@@ -7,11 +7,11 @@ import (
 	"strconv"
 
 	"github.com/api-gateway/common"
-	options "github.com/api-gateway/third_party/google/api"
+	"github.com/api-gateway/third_party/google/api"
+	"github.com/api-gateway/third_party/runtime"
 	"github.com/api-gateway/types"
-
-	"github.com/golang/protobuf/proto"
-	plugin "github.com/golang/protobuf/protoc-gen-go/plugin"
+	"github.com/gogo/protobuf/proto"
+	"github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 )
 
 func main() {
@@ -20,31 +20,39 @@ func main() {
 		log.Error("error reading input")
 	}
 
-	request := new(plugin.CodeGeneratorRequest)
+	request := new(plugin_go.CodeGeneratorRequest)
 	if err := proto.Unmarshal(data, request); err != nil {
 		log.Error(err)
 	}
 
 	var methods []types.MethodWrapper
-	for _, allProtoBuff := range request.GetProtoFile() {
-		for _, generateProtoBuff := range request.FileToGenerate {
-			if *allProtoBuff.Name == generateProtoBuff {
-				for _, service := range allProtoBuff.Service {
+	for _, protoFile := range request.GetProtoFile() {
+		for _, generateFileName := range request.FileToGenerate {
+			if *protoFile.Name == generateFileName {
+				for _, service := range protoFile.Service {
 					for _, md := range service.Method {
-						ext, err := proto.GetExtension(md.Options, options.E_Http)
-						if err == nil {
-							//exts = append(exts, ext)
-							method := types.MethodWrapper{}
-							method.Package = *allProtoBuff.Package
-							method.Service = *service.Name
-							method.Method = md
+						method := types.MethodWrapper{}
+						options := make(map[string]interface{})
 
+						method.Package = *protoFile.Package
+						method.Service = *service.Name
+						method.Method = md
+
+						if aut, err := proto.GetExtension(md.Options, runtime.E_Authentication); err == nil {
+							au := aut.(*bool)
+							options[runtime.E_Authentication.Name] = au
+						}
+						method.Options = options
+
+						if ext, err := proto.GetExtension(md.Options, google_api.E_Http); err == nil {
 							pattern := types.Pattern{}
-							rule := ext.(*options.HttpRule)
-							pattern.Verb = getVerb(rule)
-							pattern.Path = rule.GetGet() + rule.GetPost() + rule.GetPut() + rule.GetDelete() + rule.GetPatch()
+							rule := ext.(*google_api.HttpRule)
+							verb, path := getVerbAndPath(rule)
+							pattern.Verb = verb
+							pattern.Path = path
 							pattern.Body = rule.Body
 							method.Pattern = pattern
+							//options[google_api.E_Http.Name] = rule
 							methods = append(methods, method)
 						}
 					}
@@ -62,19 +70,28 @@ func main() {
 	f.WriteString(str)
 }
 
-func getVerb(opts *options.HttpRule) string {
-	var httpMethod string
+func getVerbAndPath(opts *google_api.HttpRule) (string, string) {
+	var httpMethod, path string
 	switch {
 	case opts.GetGet() != "":
 		httpMethod = "GET"
+		path = opts.GetGet()
 	case opts.GetPost() != "":
 		httpMethod = "POST"
+		path = opts.GetPost()
 	case opts.GetPut() != "":
 		httpMethod = "PUT"
+		path = opts.GetPut()
 	case opts.GetDelete() != "":
 		httpMethod = "DELETE"
+		path = opts.GetDelete()
 	case opts.GetPatch() != "":
 		httpMethod = "PATCH"
+		path = opts.GetPatch()
+	case opts.GetCustom() != nil:
+		custom := opts.GetCustom()
+		httpMethod = custom.Kind
+		path = custom.Path
 	}
-	return httpMethod
+	return httpMethod, path
 }

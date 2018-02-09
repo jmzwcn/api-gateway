@@ -2,11 +2,12 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
-	"google.golang.org/grpc/status"
-
 	"github.com/api-gateway/common"
+	"github.com/gogo/protobuf/jsonpb"
+	"google.golang.org/grpc/status"
 )
 
 func Run(hostBind string) {
@@ -20,15 +21,14 @@ func Run(hostBind string) {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-	resp, err := handleForward(ctx, r)
+	msg, err := handleForward(context.Background(), r)
 	if err != nil {
-		log.Error(err)
 		status, _ := status.FromError(err)
-		http.Error(w, err.Error(), HTTPStatusFromCode(status.Code()))
+		DefaultErrorHandler(w, status)
 	} else {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(resp))
+		marshaler := jsonpb.Marshaler{}
+		if err := marshaler.Marshal(w, msg); err != nil {
+			fmt.Fprintf(w, "%s", err)
+		}
 	}
 }

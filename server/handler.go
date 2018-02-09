@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
@@ -10,11 +9,8 @@ import (
 	"github.com/api-gateway/common"
 	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
-
-	goproto "github.com/gogo/protobuf/proto"
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
-
+	"github.com/gogo/protobuf/jsonpb"
+	"github.com/gogo/protobuf/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -25,38 +21,38 @@ var (
 	rpcPort = "50051"
 )
 
-func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (string, error) {
-	log.Debug("Header", req.Header)
-	body, _ := ioutil.ReadAll(req.Body)
-	log.Debug("Body", string(body))
-
+func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOption) (proto.Message, error) {
 	sm, err := searchMethod(req.Method, req.URL.Path)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
+	in := protoMessage(sm.Method.GetInputType())
+	out := protoMessage(sm.Method.GetOutputType())
 	req.ParseForm()
-	jsonContent := mergeToBody(string(body), sm.MergeValue, req)
+	jsonContent, err := mergeBody(req, sm.PathValues, in)
+	if err != nil {
+		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
+	}
 	log.Debug("jsonContent:", jsonContent)
 
-	protoReq := protoMessage(sm.Method.GetInputType())
-	protoRes := protoMessage(sm.Method.GetOutputType())
-	if err = jsonpb.UnmarshalString(jsonContent, protoReq); err != nil {
+	if err = jsonpb.UnmarshalString(jsonContent, in); err != nil {
 		log.Error(err)
+		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
 	}
 	//sm.package represents for module name by default, meaning service name
 	rpcServer := sm.Package + ":" + rpcPort
-	rpcConn, err := grpc.Dial(rpcServer, grpc.WithInsecure())
+	conn, err := grpc.Dial(rpcServer, grpc.WithInsecure())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	requestURL := "/" + sm.Package + "." + sm.Service + "/" + *sm.Method.Name
-	log.Debug(requestURL)
+	defer conn.Close()
 
-	if err = grpc.Invoke(ctx, requestURL, protoReq, protoRes, rpcConn, opts...); err != nil {
-		return "", err
+	fullMethod := "/" + sm.Package + "." + sm.Service + "/" + *sm.Method.Name
+	if err = grpc.Invoke(ctx, fullMethod, in, out, conn, opts...); err != nil {
+		return nil, err
 	}
-	return new(jsonpb.Marshaler).MarshalToString(protoRes)
+	return out, nil
 }
 
 func searchMethod(method, path string) (*types.MatchedMethod, error) {
@@ -69,23 +65,8 @@ func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	return nil, status.Error(codes.NotFound, key+" not been found.")
 }
 
-func mergeToBody(bodyValue, pathValue string, req *http.Request) string {
-	if bodyValue == "" {
-		return ""
-	}
-	queryValue := ""
-	for k, v := range req.Form {
-		queryValue = queryValue + ",\"" + k + "\":\"" + v[0] + "\"" + ",\"" + k + "\":" + v[0]
-	}
-	return strings.TrimSuffix(bodyValue, "}") + pathValue + queryValue + "}"
-
-}
-
 func protoMessage(messageTypeName string) proto.Message {
 	typeName := strings.TrimLeft(messageTypeName, ".")
-	messageType := goproto.MessageType(typeName)
-	if messageType == nil {
-		messageType = proto.MessageType(typeName)
-	}
+	messageType := proto.MessageType(typeName)
 	return reflect.New(messageType.Elem()).Interface().(proto.Message)
 }
