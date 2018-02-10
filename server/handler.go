@@ -2,11 +2,11 @@ package server
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"reflect"
 	"strings"
 
-	"github.com/api-gateway/common"
 	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
 	"github.com/gogo/protobuf/jsonpb"
@@ -29,15 +29,15 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 	in := protoMessage(sm.Method.GetInputType())
 	out := protoMessage(sm.Method.GetOutputType())
-	req.ParseForm()
+
 	jsonContent, err := mergeBody(req, sm.PathValues, in)
 	if err != nil {
 		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
 	}
-	log.Debug("jsonContent:", jsonContent)
+	log.Println("jsonContent:", jsonContent)
 
 	if err = jsonpb.UnmarshalString(jsonContent, in); err != nil {
-		log.Error(err)
+		log.Panicln(err)
 		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
 	}
 	//sm.package represents for module name by default, meaning service name
@@ -57,7 +57,7 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	key := method + ":" + path
-	log.Debug("key", key)
+	log.Println("key", key)
 	matchedMethod := loader.RuleStore.Match(key)
 	if matchedMethod != nil {
 		return matchedMethod, nil

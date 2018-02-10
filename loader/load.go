@@ -2,8 +2,8 @@ package loader
 
 import (
 	"encoding/json"
+	"log"
 
-	"github.com/api-gateway/common"
 	"github.com/api-gateway/types"
 )
 
@@ -18,13 +18,13 @@ func load() {
 	var methods []types.MethodWrapper
 	err := json.Unmarshal([]byte(string(PROTO_JSON)), &methods)
 	if err != nil {
-		log.Error(err)
+		log.Panicln(err)
 	}
 
 	for _, md := range methods {
-		//key := md.Pattern.Verb + ":" + md.Pattern.Path
-		key := md.Pattern.Verb + ":/" + md.Package + md.Pattern.Path
-		log.Debug(key, "->", md)
+		key := md.Pattern.Verb + ":" + md.Pattern.Path
+		//key := md.Pattern.Verb + ":/" + md.Package + md.Pattern.Path
+		log.Println(key, "->", md)
 		RuleStore[key] = md
 	}
 }

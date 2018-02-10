@@ -1,10 +1,9 @@
 package types
 
 import (
+	"log"
 	"net/url"
 	"strings"
-
-	"github.com/api-gateway/common"
 )
 
 type RuleStore map[string]MethodWrapper
@@ -33,7 +32,7 @@ func (rs RuleStore) Match(key string) *MatchedMethod {
 				}
 			}
 			method := MatchedMethod{Precision: precision, PathValues: values, MethodWrapper: methodWrapper}
-			log.Debug(method)
+			log.Println(method)
 			*ps = append(*ps, &method)
 		}
 	NEXT_LOOP:

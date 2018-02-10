@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/api-gateway/common"
 	"github.com/gogo/protobuf/jsonpb"
 	"google.golang.org/grpc/status"
 )
@@ -14,7 +14,7 @@ func Run(hostBind string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", handler)
 
-	log.Info("Listening on " + hostBind)
+	log.Println("Listening on " + hostBind)
 	if err := http.ListenAndServe(hostBind, mux); err != nil {
 		log.Fatal(err)
 	}
