@@ -1,6 +1,6 @@
 # API Gateway
 
-A native and easy gateway to automaticly provide RESTful API for gRPC
+A native and easy gateway to automaticly provide RESTful API for gRPC.
 
 
 ## Usage:
@@ -12,7 +12,7 @@ A native and easy gateway to automaticly provide RESTful API for gRPC
 * Try the URL in your proto.
 
 
-#### For more detail, please refor to example&&Makefile.
+For custom setting, please refor to example&&Makefile.
 
 How to define RESTful in *.proto: [[custom option](https://cloud.google.com/service-management/reference/rpc/google.api#http)]
    
