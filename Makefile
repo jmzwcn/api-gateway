@@ -12,9 +12,9 @@ LD_FLAGS:=-X main.Version=$(VERSION) -X main.Revision=$(REVISION) -X main.Releas
 ##################################################
 # All macro-services's parent directory
 SERVICES_PARENT_DIR=github.com/api-gateway/example
-# APIDir includes all of *.proto
+# APIDir includes *.proto
 API_DIR=service
-
+##################################################
 ifeq (${shell uname -s}, Darwin)
 	SED=gsed
 else
@@ -36,8 +36,7 @@ parse:
 initial:
 	@echo "package loader\n"> loader/initial.go;
 	@for dir in $(shell cd ../../ && ls -d $(SERVICES_PARENT_DIR)/*/$(API_DIR)); do \
-	echo 'import _ "'$$dir'"'>> loader/initial.go;\
-	done;\
+	echo 'import _ "'$$dir'"'>> loader/initial.go; done;\
 	json=`cat rules.json`;\
 	echo "\nconst PROTO_JSON = "$$json >> loader/initial.go;
 	@echo Initial successfully.

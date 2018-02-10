@@ -7,11 +7,9 @@ A gateway to automaticly provide RESTful API for gRPC
 
 1.Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
 
-2.Tell protos where you want RESTful: [config.json];
+2."make run" in api-gateway dir;
 
-3.Run "make" and then "api-gateway";
-
-4.Try the URL in your proto.
+3.Try the URL in your proto.
 
 
 How to define RESTful in *.proto: [[custom option](https://cloud.google.com/service-management/reference/rpc/google.api#http)]
