@@ -6,7 +6,7 @@ A native and easy gateway to automaticly provide RESTful API for gRPC.
 
 ## Usage:
 * Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
-* Set your macro-service dir in Makefile;
+* Set your macro-services directory in Makefile;
 * "make run";
 * Try the URL in your proto.
 
@@ -39,4 +39,3 @@ Enjoy it!
 
 <hr/>
 For custom setting, please refer to example&&Makefile.
-<hr/>

@@ -48,9 +48,9 @@ initial:
 	@echo Initial successfully.
 
 build:parse initial
-	@go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go
-	@rm rules.json
+	@go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go	
 	docker build -t $(IMG_HUB)/$(SERVICE):$(TAG) .
+	@rm rules.json
 
 run:prepare
 	cd example/echo && make run
