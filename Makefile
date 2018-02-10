@@ -23,10 +23,15 @@ else
 endif
 
 prepare: SHELL:=bash
-prepare:
+prepare:download
 	@-docker swarm init
 	@-docker network create --driver=overlay devel
 	@go install github.com/api-gateway/plugin/...
+
+download:
+	@echo "Download dependencies..."
+	@go get google.golang.org/grpc
+	@go get github.com/gogo/protobuf/protoc-gen-gogofast
 
 parse:	
 	@protoc -I${GOPATH}/src \
@@ -45,14 +50,13 @@ initial:
 build:parse initial
 	@go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go
 	@rm rules.json
-
-image:build
 	docker build -t $(IMG_HUB)/$(SERVICE):$(TAG) .
 
-run:prepare image
+run:prepare
 	cd example/echo && make run
 	cd example/helloworld && make run
-	@-docker service rm $(SERVICE) > /dev/null 2>&1  || true	
+	@make build
+	@-docker service rm $(SERVICE)	
 	@docker service create --name $(SERVICE) --network devel -p 8080:8080 $(IMG_HUB)/$(SERVICE):$(TAG)
 
 test:

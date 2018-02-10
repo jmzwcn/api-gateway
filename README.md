@@ -6,7 +6,8 @@ A native and easy gateway to automaticly provide RESTful API for gRPC.
 
 ## Usage:
 * Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
-* "make run" in api-gateway directory;
+* Set your macro-service dir in Makefile;
+* "make run";
 * Try the URL in your proto.
 
 
