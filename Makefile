@@ -1,3 +1,9 @@
+##################################################
+# All macro-services's parent directory
+SERVICES_PARENT_DIR=github.com/api-gateway/example
+# APIDir includes *.proto
+API_DIR=service
+##################################################
 # Variables
 SERVICE=api-gateway
 IMG_HUB?=registry.test.com/test
@@ -9,12 +15,7 @@ RELEASE=production
 BUILD_HASH=${shell git rev-parse HEAD}
 BUILD_TIME=${shell date "+%Y-%m-%d@%H:%M:%SZ%z"}
 LD_FLAGS:=-X main.Version=$(VERSION) -X main.Revision=$(REVISION) -X main.Release=$(RELEASE) -X main.BuildHash=$(BUILD_HASH) -X main.BuildTime=$(BUILD_TIME)
-##################################################
-# All macro-services's parent directory
-SERVICES_PARENT_DIR=github.com/api-gateway/example
-# APIDir includes *.proto
-API_DIR=service
-##################################################
+
 ifeq (${shell uname -s}, Darwin)
 	SED=gsed
 else

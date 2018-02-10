@@ -17,7 +17,6 @@ import (
 )
 
 var (
-	rpcHost = "localhost" // e.g:grpc_service_name
 	rpcPort = "50051"
 )
 
@@ -40,9 +39,9 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 		log.Panicln(err)
 		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
 	}
-	//sm.package represents for module name by default, meaning service name
-	rpcServer := sm.Package + ":" + rpcPort
-	conn, err := grpc.Dial(rpcServer, grpc.WithInsecure())
+	//sm.package represents for service name by default
+	service := sm.Package + ":" + rpcPort
+	conn, err := grpc.Dial(service, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +56,6 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	key := method + ":" + path
-	log.Println("key", key)
 	matchedMethod := loader.RuleStore.Match(key)
 	if matchedMethod != nil {
 		return matchedMethod, nil
