@@ -1,21 +1,19 @@
 # API Gateway
 A native and easy gateway to automaticly provide RESTful API for gRPC.
 
-## Preparation:
-* Download&&Install golang/protoc/docker and ENV setting
+## Prepare:
+* Download&&Install golang/protoc/docker and Env setting.
 
 ## Usage:
 * Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
 * "make run" in api-gateway directory;
 * Try the URL in your proto.
 
-<hr/>
-For custom setting, please refer to example&&Makefile.
-<hr/>
+
 How to define RESTful in *.proto: [[custom option](https://cloud.google.com/service-management/reference/rpc/google.api#http)]
    
    your_service.proto:
-   ```protobuf
+   ```diff
     syntax = "proto3";
     package example;
    +
@@ -37,3 +35,7 @@ How to define RESTful in *.proto: [[custom option](https://cloud.google.com/serv
    ```
    
 Enjoy it!
+
+<hr/>
+For custom setting, please refer to example&&Makefile.
+<hr/>
