@@ -1,13 +1,13 @@
 # API Gateway
 
-A gateway to automaticly provide RESTful API for gRPC
+A native and easiest gateway to automaticly provide RESTful API for gRPC
 
 
 ## Usage:
 
 1.Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
 
-2."make run" in api-gateway dir;
+2."make run" in api-gateway directory;
 
 3.Try the URL in your proto.
 
