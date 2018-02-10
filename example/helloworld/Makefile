@@ -10,7 +10,6 @@ BUILD_HASH=${shell git rev-parse HEAD}
 BUILD_TIME=${shell date "+%Y-%m-%d@%H:%M:%SZ%z"}
 LD_FLAGS:=-X main.Version=$(VERSION) -X main.Revision=$(REVISION) -X main.Release=$(RELEASE) -X main.BuildHash=$(BUILD_HASH) -X main.BuildTime=$(BUILD_TIME)
 
-
 ifeq (${shell uname -s}, Darwin)
 	SED=gsed
 else

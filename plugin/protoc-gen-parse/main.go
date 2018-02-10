@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -65,9 +66,10 @@ func main() {
 	if err != nil {
 		log.Panicln("json.Marshal eror", err)
 	}
-	f, _ := os.Create("parse.json")
+	f, _ := os.Create("rules.json")
 	str := strconv.Quote(string(jsonOut))
 	f.WriteString(str)
+	//output(strconv.Quote(string(jsonOut)))
 }
 
 func getVerbAndPath(opts *google_api.HttpRule) (string, string) {
@@ -95,3 +97,38 @@ func getVerbAndPath(opts *google_api.HttpRule) (string, string) {
 	}
 	return httpMethod, path
 }
+
+func output(json string) {
+	gopath := os.Getenv("GOPATH")
+	content := bytes.NewBufferString("package loader \n\n")
+	parentDir, err := os.Open(gopath + "/src/" + ServiceParentDir)
+	if err != nil {
+		log.Panicln(err)
+	}
+	subDirs, _ := parentDir.Readdir(-1)
+	for _, subDir := range subDirs {
+		dirName := gopath + "/src/" + ServiceParentDir + "/" + subDir.Name() + "/" + APIDir
+		if _, err := os.Stat(dirName); err == nil {
+			content.WriteString("import _ \"" + ServiceParentDir + "/" + subDir.Name() + "/" + APIDir + "\"" + "\n")
+		}
+	}
+
+	content.WriteString("\n")
+	content.WriteString("const PROTO_JSON = " + json)
+	err = ioutil.WriteFile(gopath+"/src/"+ServiceParentDir+"/../loader/initial.go", content.Bytes(), os.ModePerm)
+	if err != nil {
+		log.Panicln(err)
+	}
+}
+
+//No adopt for now
+var (
+	//All macro-services's parent directory
+	//e.g:
+	//your.io/marco-service1
+	//your.io/marco-service2
+	//servicesDir will be "your.io" based on GOPATH's src
+	ServiceParentDir = "github.com/api-gateway/example"
+	//APIDir includes all of *.proto
+	APIDir = "service"
+)

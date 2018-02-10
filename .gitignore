@@ -1,5 +1,6 @@
 # General
 debug
 \.vscode
+loader/initial.go
 bundles
 example/*/bundles

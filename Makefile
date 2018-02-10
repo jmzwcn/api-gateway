@@ -9,6 +9,11 @@ RELEASE=production
 BUILD_HASH=${shell git rev-parse HEAD}
 BUILD_TIME=${shell date "+%Y-%m-%d@%H:%M:%SZ%z"}
 LD_FLAGS:=-X main.Version=$(VERSION) -X main.Revision=$(REVISION) -X main.Release=$(RELEASE) -X main.BuildHash=$(BUILD_HASH) -X main.BuildTime=$(BUILD_TIME)
+##################################################
+# All macro-services's parent directory
+SERVICES_PARENT_DIR=github.com/api-gateway/example
+# APIDir includes all of *.proto
+API_DIR=service
 
 ifeq (${shell uname -s}, Darwin)
 	SED=gsed
@@ -20,23 +25,26 @@ prepare: SHELL:=bash
 prepare:
 	@-docker swarm init
 	@-docker network create --driver=overlay devel
+	@go install github.com/api-gateway/plugin/...
 
-parse:
-	go install github.com/api-gateway/plugin/...
-	protoc -I${GOPATH}/src -I${GOPATH}/src/github.com/api-gateway/third_party -I${GOPATH}/src/github.com/gogo/protobuf ${GOPATH}/src/github.com/api-gateway/example/*/service/*.proto --parse_out=.
+parse:	
+	@protoc -I${GOPATH}/src \
+	-I${GOPATH}/src/github.com/api-gateway/third_party \
+	-I${GOPATH}/src/github.com/gogo/protobuf ${GOPATH}/src/$(SERVICES_PARENT_DIR)/*/$(API_DIR)/*.proto --parse_out=.
+	@echo Generate successfully.
 
 initial:
-	@echo "package loader"> loader/initial.go;
-	@for dir in $(shell cd ../../ && ls -d github.com/api-gateway/example/*/service); do \
+	@echo "package loader\n"> loader/initial.go;
+	@for dir in $(shell cd ../../ && ls -d $(SERVICES_PARENT_DIR)/*/$(API_DIR)); do \
 	echo 'import _ "'$$dir'"'>> loader/initial.go;\
 	done;\
-	json=`cat parse.json`;\
-	echo "const PROTO_JSON = "$$json >> loader/initial.go;
+	json=`cat rules.json`;\
+	echo "\nconst PROTO_JSON = "$$json >> loader/initial.go;
 	@echo Initial successfully.
 
 build:parse initial
-	go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go
-	@rm parse.json
+	@go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go
+	@rm rules.json
 
 image:build
 	docker build -t $(IMG_HUB)/$(SERVICE):$(TAG) .
