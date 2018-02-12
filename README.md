@@ -1,5 +1,5 @@
 # API Gateway
-A native and easy gateway to automaticly provide RESTful API for gRPC, inspired by [grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway).
+A native and easy gateway to provide RESTful API for gRPC, inspired by [grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway), but fully automation.
 
 ## Prepare:
 * Download&&Install golang/protoc/docker and Env setting.
