@@ -6,7 +6,7 @@ PROTO_DIR=service
 ##################################################
 # Variables
 SERVICE=api-gateway
-IMG_HUB?=registry.test.com/test
+IMG_HUB?=registry.test.io/test
 TAG?=latest
 # Version information
 VERSION=1.0.0

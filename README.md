@@ -38,4 +38,4 @@ How to define RESTful in *.proto: [[custom option](https://cloud.google.com/serv
 Enjoy it!
 
 <hr/>
-Please refer to example&&Makefile for more settings, 
+Please refer to example&&Makefile, for more setting.
