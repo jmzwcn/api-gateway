@@ -1,7 +1,7 @@
 ##################################################
 # All macro-services's parent directory
 SERVICES_PARENT_DIR=github.com/api-gateway/example
-# PROTO_Dir includes *.proto
+# PROTO_DIR includes *.proto
 PROTO_DIR=service
 ##################################################
 # Variables

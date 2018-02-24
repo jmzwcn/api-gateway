@@ -6,7 +6,7 @@ A native and easy gateway to provide RESTful API for gRPC, inspired by [grpc-gat
 
 ## Usage:
 * Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
-* Tell your services directory in Makefile;
+* Tell your services in Makefile;
 * "make run";
 * Try the URL in your proto.
 
