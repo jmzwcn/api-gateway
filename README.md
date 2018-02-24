@@ -6,7 +6,7 @@ A native and easy gateway to provide RESTful API for gRPC, inspired by [grpc-gat
 
 ## Usage:
 * Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
-* Tell your macro-services directory in Makefile;
+* Tell your services directory in Makefile;
 * "make run";
 * Try the URL in your proto.
 
@@ -38,4 +38,4 @@ How to define RESTful in *.proto: [[custom option](https://cloud.google.com/serv
 Enjoy it!
 
 <hr/>
-For custom setting, please refer to example&&Makefile.
+Please refer to example&&Makefile for more settings, 
