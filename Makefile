@@ -1,12 +1,12 @@
 ##################################################
 # All macro-services's parent directory
 SERVICES_PARENT_DIR=github.com/api-gateway/example
-# APIDir includes *.proto
-API_DIR=service
+# PROTO_DIR includes *.proto
+PROTO_DIR=service
 ##################################################
 # Variables
 SERVICE=api-gateway
-IMG_HUB?=registry.test.com/test
+IMG_HUB?=registry.test.io/test
 TAG?=latest
 # Version information
 VERSION=1.0.0
@@ -36,12 +36,12 @@ download:
 parse:	
 	@protoc -I${GOPATH}/src \
 	-I${GOPATH}/src/github.com/api-gateway/third_party \
-	-I${GOPATH}/src/github.com/gogo/protobuf ${GOPATH}/src/$(SERVICES_PARENT_DIR)/*/$(API_DIR)/*.proto --parse_out=.
+	-I${GOPATH}/src/github.com/gogo/protobuf ${GOPATH}/src/$(SERVICES_PARENT_DIR)/*/$(PROTO_DIR)/*.proto --parse_out=.
 	@echo Generate successfully.
 
 initial:
 	@echo "package loader\n"> loader/initial.go;
-	@for dir in $(shell cd ../../ && ls -d $(SERVICES_PARENT_DIR)/*/$(API_DIR)); do \
+	@for dir in $(shell cd ../../ && ls -d $(SERVICES_PARENT_DIR)/*/$(PROTO_DIR)); do \
 	echo 'import _ "'$$dir'"'>> loader/initial.go; done;\
 	json=`cat rules.json`;\
 	echo "\nconst PROTO_JSON = "$$json >> loader/initial.go;
