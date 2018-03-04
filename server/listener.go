@@ -11,7 +11,7 @@ import (
 )
 
 func Run(hostBind string) {
-	mux := http.NewServeMux()
+	mux := new(ExServeMux)
 	mux.HandleFunc("/", handler)
 
 	log.Println("Listening on " + hostBind)
