@@ -17,6 +17,6 @@ func (mux *ExServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	wsh := websocket.Handler(func(ws *websocket.Conn) { WSHandler(r, ws) })
+	wsh := websocket.Handler(func(ws *websocket.Conn) { streamHandler(r, ws) })
 	wsh.ServeHTTP(w, r)
 }

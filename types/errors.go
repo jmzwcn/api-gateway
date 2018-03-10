@@ -1,4 +1,4 @@
-package server
+package types
 
 import (
 	"encoding/json"
@@ -17,7 +17,7 @@ func HTTPStatusFromCode(code codes.Code) int {
 	case codes.Canceled:
 		return http.StatusRequestTimeout
 	case codes.Unknown:
-		return http.StatusInternalServerError
+		return http.StatusNoContent
 	case codes.InvalidArgument:
 		return http.StatusBadRequest
 	case codes.DeadlineExceeded:

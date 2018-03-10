@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"reflect"
 	"strings"
@@ -13,6 +12,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 )
 
@@ -33,22 +33,24 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 	if err != nil {
 		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
 	}
-	log.Println("jsonContent:", jsonContent)
+	grpclog.Println("jsonContent:", jsonContent)
 
 	if err = jsonpb.UnmarshalString(jsonContent, in); err != nil {
-		log.Panicln(err)
-		return nil, grpc.Errorf(codes.InvalidArgument, err.Error())
+		grpclog.Error(err)
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
 	}
 	//sm.package represents for service name by default
 	service := sm.Package + ":" + rpcPort
 	conn, err := grpc.Dial(service, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
+		grpclog.Error(err)
 		return nil, err
 	}
 	defer conn.Close()
 
 	fullMethod := "/" + sm.Package + "." + sm.Service + "/" + *sm.Method.Name
 	if err = grpc.Invoke(ctx, fullMethod, in, out, conn, opts...); err != nil {
+		grpclog.Error(err)
 		return nil, err
 	}
 	return out, nil

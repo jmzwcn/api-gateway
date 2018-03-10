@@ -3,28 +3,29 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 
+	"github.com/api-gateway/types"
 	"github.com/gogo/protobuf/jsonpb"
+	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 )
 
 func Run(hostBind string) {
 	mux := new(ExServeMux)
-	mux.HandleFunc("/", handler)
+	mux.HandleFunc("/", unaryHandler)
 
-	log.Println("Listening on " + hostBind)
+	grpclog.Println("Listening on " + hostBind)
 	if err := http.ListenAndServe(hostBind, mux); err != nil {
-		log.Fatal(err)
+		grpclog.Fatal(err)
 	}
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func unaryHandler(w http.ResponseWriter, r *http.Request) {
 	msg, err := handleForward(context.Background(), r)
 	if err != nil {
 		status, _ := status.FromError(err)
-		DefaultErrorHandler(w, status)
+		types.DefaultErrorHandler(w, status)
 	} else {
 		marshaler := jsonpb.Marshaler{}
 		if err := marshaler.Marshal(w, msg); err != nil {
