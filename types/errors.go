@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/api-gateway/types/log"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 )
 
@@ -48,7 +48,7 @@ func HTTPStatusFromCode(code codes.Code) int {
 		return http.StatusInternalServerError
 	}
 
-	grpclog.Printf("Unknown gRPC error code: %v", code)
+	log.Printf("Unknown gRPC error code: %v", code)
 	return http.StatusInternalServerError
 }
 

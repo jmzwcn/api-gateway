@@ -5,16 +5,16 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/jsonpb"
 	"golang.org/x/net/websocket"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/grpclog"
 )
 
 func streamHandler(req *http.Request, ws *websocket.Conn) {
 	sm, err := searchMethod(req.Method, req.URL.Path)
 	if err != nil {
-		grpclog.Error(err)
+		log.Error(err)
 	}
 	in := protoMessage(sm.Method.GetInputType())
 	out := protoMessage(sm.Method.GetOutputType())
@@ -30,7 +30,7 @@ func streamHandler(req *http.Request, ws *websocket.Conn) {
 	}
 	stream, err := grpc.NewClientStream(context.Background(), streamDesc, conn, fullMethod)
 	if err != nil {
-		grpclog.Error(err)
+		log.Error(err)
 	}
 	//write
 	go func() {
@@ -41,7 +41,7 @@ func streamHandler(req *http.Request, ws *websocket.Conn) {
 			}
 			json, err := (&jsonpb.Marshaler{}).MarshalToString(out)
 			if err != nil {
-				grpclog.Error(err)
+				log.Error(err)
 				continue
 			}
 			websocket.Message.Send(ws, &json)
@@ -56,7 +56,7 @@ func streamHandler(req *http.Request, ws *websocket.Conn) {
 			break
 		}
 		if err = jsonpb.UnmarshalString(jsonStr, in); err != nil {
-			grpclog.Error(err)
+			log.Error(err)
 			continue
 		}
 		stream.SendMsg(&in)

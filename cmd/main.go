@@ -4,16 +4,16 @@ import (
 	"flag"
 	"os"
 
-	"github.com/api-gateway/loader"
 	"github.com/api-gateway/server"
-	"google.golang.org/grpc/grpclog"
+	"github.com/api-gateway/types/log"
 )
 
-var hostBind string
+var (
+	hostBind string
+)
 
 func main() {
-	grpclog.Println("API-Gateway start...")
-	loader.Services()
+	log.Infoln("API-Gateway start...")
 	server.Run(hostBind)
 }
 

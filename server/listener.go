@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/api-gateway/types"
+	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/jsonpb"
-	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/status"
 )
 
@@ -15,9 +15,9 @@ func Run(hostBind string) {
 	mux := new(ExServeMux)
 	mux.HandleFunc("/", unaryHandler)
 
-	grpclog.Println("Listening on " + hostBind)
+	log.Infoln("Listening on " + hostBind)
 	if err := http.ListenAndServe(hostBind, mux); err != nil {
-		grpclog.Fatal(err)
+		log.Fatal(err)
 	}
 }
 

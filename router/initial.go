@@ -1,4 +1,4 @@
-package loader
+package router
 
 import _ "github.com/api-gateway/example/echo/service"
 import _ "github.com/api-gateway/example/helloworld/service"

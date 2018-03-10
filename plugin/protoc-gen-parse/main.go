@@ -3,13 +3,13 @@ package main
 import (
 	"encoding/json"
 	"io/ioutil"
-	"log"
 	"os"
 	"strconv"
 
 	"github.com/api-gateway/third_party/google/api"
 	"github.com/api-gateway/third_party/runtime"
 	"github.com/api-gateway/types"
+	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 )
@@ -17,12 +17,12 @@ import (
 func main() {
 	data, err := ioutil.ReadAll(os.Stdin)
 	if err != nil {
-		log.Panicln("error reading input")
+		log.Fatalln("error reading input")
 	}
 
 	request := new(plugin_go.CodeGeneratorRequest)
 	if err := proto.Unmarshal(data, request); err != nil {
-		log.Panicln(err)
+		log.Fatalln(err)
 	}
 
 	var methods []types.MethodWrapper
@@ -63,7 +63,7 @@ func main() {
 
 	jsonOut, err := json.Marshal(methods)
 	if err != nil {
-		log.Panicln("json.Marshal eror", err)
+		log.Fatalln("json.Marshal eror", err)
 	}
 	f, _ := os.Create("rules.json")
 	str := strconv.Quote(string(jsonOut))

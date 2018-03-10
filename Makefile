@@ -40,11 +40,11 @@ parse:
 	@echo Generate successfully.
 
 initial:
-	@echo "package loader\n"> loader/initial.go;
+	@echo "package router\n"> router/initial.go;
 	@for dir in $(shell cd ../../ && ls -d $(SERVICES_PARENT_DIR)/*/$(PROTO_DIR)); do \
-	echo 'import _ "'$$dir'"'>> loader/initial.go; done;\
+	echo 'import _ "'$$dir'"'>> router/initial.go; done;\
 	json=`cat rules.json`;\
-	echo "\nconst PROTO_JSON = "$$json >> loader/initial.go;
+	echo "\nconst PROTO_JSON = "$$json >> router/initial.go;
 	@echo Initial successfully.
 
 build:parse initial
