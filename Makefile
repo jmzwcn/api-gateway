@@ -57,7 +57,7 @@ run:prepare
 	cd example/helloworld && make run
 	@make build
 	@-docker service rm $(SERVICE)	
-	@docker service create --name $(SERVICE) --network devel -p 8080:8080 $(IMG_HUB)/$(SERVICE):$(TAG)
+	@docker service create --name $(SERVICE) --network devel -p 8080:8080 -e GRPC_GO_LOG_SEVERITY_LEVEL=INFO $(IMG_HUB)/$(SERVICE):$(TAG)
 
 test:
 	$(GOCMD) test -cover ./...

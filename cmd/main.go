@@ -13,7 +13,7 @@ var (
 )
 
 func main() {
-	log.Infoln("API-Gateway start...")
+	log.Println("API-Gateway start...")
 	server.Run(hostBind)
 }
 

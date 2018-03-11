@@ -8,14 +8,25 @@ import (
 	"github.com/api-gateway/types"
 	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/jsonpb"
+	"golang.org/x/net/trace"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
+
+func init() {
+	grpc.EnableTracing = true
+	trace.AuthRequest = func(req *http.Request) (any, sensitive bool) {
+		return true, true
+	}
+}
 
 func Run(hostBind string) {
 	mux := new(ExServeMux)
 	mux.HandleFunc("/", unaryHandler)
+	mux.HandleFunc("/debug/requests", trace.Traces)
+	mux.HandleFunc("/debug/events", trace.Events)
 
-	log.Infoln("Listening on " + hostBind)
+	log.Println("Listening on " + hostBind)
 	if err := http.ListenAndServe(hostBind, mux); err != nil {
 		log.Fatal(err)
 	}

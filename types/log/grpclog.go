@@ -21,7 +21,7 @@
 // All logs in transport package only go to verbose level 2.
 // All logs in other packages in grpc are logged in spite of the verbosity level.
 //
-// In the default logger,
+// In the default grpclog,
 // severity level can be set by environment variable GRPC_GO_LOG_SEVERITY_LEVEL,
 // verbosity level can be set by GRPC_GO_LOG_VERBOSITY_LEVEL.
 package log
@@ -33,62 +33,60 @@ import (
 	"google.golang.org/grpc/grpclog"
 )
 
-var logger = grpclog.NewLoggerV2(os.Stdout, os.Stdout, os.Stderr)
-
 // V reports whether verbosity level l is at least the requested verbose level.
 func V(l int) bool {
-	return logger.V(l)
+	return grpclog.V(l)
 }
 
 // Info logs to the INFO log.
 func Info(args ...interface{}) {
-	logger.Info(args...)
+	grpclog.Info(args...)
 }
 
 // Infof logs to the INFO log. Arguments are handled in the manner of fmt.Printf.
 func Infof(format string, args ...interface{}) {
-	logger.Infof(format, args...)
+	grpclog.Infof(format, args...)
 }
 
 // Infoln logs to the INFO log. Arguments are handled in the manner of fmt.Println.
 func Infoln(args ...interface{}) {
-	logger.Infoln(args...)
+	grpclog.Infoln(args...)
 }
 
 // Warning logs to the WARNING log.
 func Warning(args ...interface{}) {
-	logger.Warning(args...)
+	grpclog.Warning(args...)
 }
 
 // Warningf logs to the WARNING log. Arguments are handled in the manner of fmt.Printf.
 func Warningf(format string, args ...interface{}) {
-	logger.Warningf(format, args...)
+	grpclog.Warningf(format, args...)
 }
 
 // Warningln logs to the WARNING log. Arguments are handled in the manner of fmt.Println.
 func Warningln(args ...interface{}) {
-	logger.Warningln(args...)
+	grpclog.Warningln(args...)
 }
 
 // Error logs to the ERROR log.
 func Error(args ...interface{}) {
-	logger.Error(args...)
+	grpclog.Error(args...)
 }
 
 // Errorf logs to the ERROR log. Arguments are handled in the manner of fmt.Printf.
 func Errorf(format string, args ...interface{}) {
-	logger.Errorf(format, args...)
+	grpclog.Errorf(format, args...)
 }
 
 // Errorln logs to the ERROR log. Arguments are handled in the manner of fmt.Println.
 func Errorln(args ...interface{}) {
-	logger.Errorln(args...)
+	grpclog.Errorln(args...)
 }
 
 // Fatal logs to the FATAL log. Arguments are handled in the manner of fmt.Print.
 // It calls os.Exit() with exit code 1.
 func Fatal(args ...interface{}) {
-	logger.Fatal(args...)
+	grpclog.Fatal(args...)
 	// Make sure fatal logs will exit.
 	os.Exit(1)
 }
@@ -96,7 +94,7 @@ func Fatal(args ...interface{}) {
 // Fatalf logs to the FATAL log. Arguments are handled in the manner of fmt.Printf.
 // It calles os.Exit() with exit code 1.
 func Fatalf(format string, args ...interface{}) {
-	logger.Fatalf(format, args...)
+	grpclog.Fatalf(format, args...)
 	// Make sure fatal logs will exit.
 	os.Exit(1)
 }
@@ -104,22 +102,22 @@ func Fatalf(format string, args ...interface{}) {
 // Fatalln logs to the FATAL log. Arguments are handled in the manner of fmt.Println.
 // It calle os.Exit()) with exit code 1.
 func Fatalln(args ...interface{}) {
-	logger.Fatalln(args...)
+	grpclog.Fatalln(args...)
 	// Make sure fatal logs will exit.
 	os.Exit(1)
 }
 
-// Print prints to the logger. Arguments are handled in the manner of fmt.Print.
+// Print prints to the grpclog. Arguments are handled in the manner of fmt.Print.
 func Print(args ...interface{}) {
 	fmt.Print(args...)
 }
 
-// Printf prints to the logger. Arguments are handled in the manner of fmt.Printf.
+// Printf prints to the grpclog. Arguments are handled in the manner of fmt.Printf.
 func Printf(format string, args ...interface{}) {
 	fmt.Printf(format, args...)
 }
 
-// Println prints to the logger. Arguments are handled in the manner of fmt.Println.
+// Println prints to the grpclog. Arguments are handled in the manner of fmt.Println.
 func Println(args ...interface{}) {
 	fmt.Println(args...)
 }
