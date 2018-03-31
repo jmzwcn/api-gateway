@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/api-gateway/router"
+	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
 	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/jsonpb"
@@ -58,7 +58,7 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	key := method + ":" + path
-	matchedMethod := router.RuleStore.Match(key)
+	matchedMethod := loader.RuleStore.Match(key)
 	if matchedMethod != nil {
 		return matchedMethod, nil
 	}

@@ -1,4 +1,4 @@
-package router
+package loader
 
 import (
 	"encoding/json"
