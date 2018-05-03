@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
 	"github.com/api-gateway/types/log"
 	"google.golang.org/grpc"
@@ -51,7 +50,7 @@ func handleForward(ctx context.Context, req *http.Request, opts ...grpc.CallOpti
 
 func searchMethod(method, path string) (*types.MatchedMethod, error) {
 	key := method + ":" + path
-	matchedMethod := loader.RuleStore.Match(key)
+	matchedMethod := ruleStore.Match(key)
 	if matchedMethod != nil {
 		return matchedMethod, nil
 	}

@@ -6,13 +6,14 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/api-gateway/loader"
 	"github.com/api-gateway/types"
 	"github.com/api-gateway/types/log"
 	"golang.org/x/net/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
+
+var ruleStore = make(types.RuleStore)
 
 func init() {
 	grpc.EnableTracing = true
@@ -24,9 +25,9 @@ func init() {
 func Run(hostBind string) {
 	mux := new(ExServeMux)
 	mux.HandleFunc("/", unaryHandler)
+	mux.HandleFunc("/loader", loaderHandler)
 	mux.HandleFunc("/debug/requests", trace.Traces)
 	mux.HandleFunc("/debug/events", trace.Events)
-	mux.HandleFunc("/loader", loaderHandler)
 
 	log.Println("Listening on " + hostBind)
 	if err := http.ListenAndServe(hostBind, mux); err != nil {
@@ -47,7 +48,7 @@ func unaryHandler(w http.ResponseWriter, r *http.Request) {
 func loaderHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		out := ""
-		for k, v := range loader.RuleStore {
+		for k, v := range ruleStore {
 			out = out + "\n" + k + " --> " + v.Package + "." + v.Service + "." + *v.Method.Name
 		}
 		w.Write([]byte(out))
@@ -59,14 +60,13 @@ func loaderHandler(w http.ResponseWriter, r *http.Request) {
 			log.Error(err)
 		}
 		var methods []types.MethodWrapper
-		err = json.Unmarshal(body, &methods)
-		if err != nil {
+		if err = json.Unmarshal(body, &methods); err != nil {
 			log.Error(err)
 		}
 
 		for _, md := range methods {
 			key := md.Pattern.Verb + ":" + md.Pattern.Path
-			loader.RuleStore[key] = md
+			ruleStore[key] = md
 		}
 	}
 }
