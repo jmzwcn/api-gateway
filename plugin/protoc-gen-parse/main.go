@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/api-gateway/third_party/google/api"
 	"github.com/api-gateway/third_party/runtime"
@@ -12,6 +13,10 @@ import (
 	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/plugin"
+)
+
+var (
+	SOME_PROTO_FILE = ""
 )
 
 func main() {
@@ -28,6 +33,7 @@ func main() {
 	var methods []types.MethodWrapper
 	for _, protoFile := range request.GetProtoFile() {
 		for _, generateFileName := range request.FileToGenerate {
+			SOME_PROTO_FILE = generateFileName
 			if *protoFile.Name == generateFileName {
 				for _, service := range protoFile.Service {
 					for _, md := range service.Method {
@@ -65,9 +71,32 @@ func main() {
 	if err != nil {
 		log.Fatalln("json.Marshal eror", err)
 	}
-	f, _ := os.Create("rules.json")
-	str := strconv.Quote(string(jsonOut))
-	f.WriteString(str)
+
+	SOME_PROTO_FILE = os.Getenv("GOPATH") + "/src/" + strings.TrimSuffix(SOME_PROTO_FILE, ".proto") + ".pb.go"
+	input, err := ioutil.ReadFile(SOME_PROTO_FILE)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	lines := strings.Split(string(input), "\n")
+	for i, line := range lines {
+		if strings.Contains(line, `import fmt "fmt"`) {
+			lines[i] = lines[i] + "\n" +
+				`import http "net/http"` + "\n" +
+				`import strings "strings"`
+		}
+	}
+	output := strings.Join(lines, "\n")
+	append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `
+func init() {
+	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/loader", "", strings.NewReader(PROTO_JSON)); err != nil {
+			fmt.Println(err)
+	 }
+}`
+	err = ioutil.WriteFile(SOME_PROTO_FILE, []byte(output+append), 0644)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func getVerbAndPath(opts *google_api.HttpRule) (string, string) {

@@ -15,6 +15,8 @@ package echo
 
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
+import http "net/http"
+import strings "strings"
 import math "math"
 import google_protobuf1 "github.com/gogo/protobuf/types"
 import google_protobuf2 "github.com/gogo/protobuf/types"
@@ -554,4 +556,12 @@ var fileDescriptorEcho = []byte{
 	0xc6, 0xf7, 0x82, 0xc1, 0x36, 0x0f, 0x06, 0x5e, 0xbe, 0x25, 0xe7, 0xc3, 0xc1, 0x7b, 0x97, 0x91,
 	0x8f, 0x2e, 0x23, 0x5f, 0x5d, 0x46, 0xf2, 0xf5, 0x90, 0x7b, 0xfd, 0x13, 0x00, 0x00, 0xff, 0xff,
 	0xff, 0xe1, 0xe8, 0x69, 0x92, 0x01, 0x00, 0x00,
+}
+
+const PROTO_JSON ="[{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Ping\",\"input_type\":\".google.protobuf.Empty\",\"output_type\":\".google.protobuf.Timestamp\",\"options\":{}},\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v1/ping\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Echo\",\"input_type\":\".echo.EchoRequest\",\"output_type\":\".echo.EchoResponse\",\"options\":{}},\"Pattern\":{\"Verb\":\"POST\",\"Path\":\"/v1/echo\",\"Body\":\"*\"},\"Options\":{}}]"
+
+func init() {
+	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/loader", "", strings.NewReader(PROTO_JSON)); err != nil {
+			fmt.Println(err)
+	 }
 }

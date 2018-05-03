@@ -25,39 +25,23 @@ endif
 prepare: SHELL:=bash
 prepare:download
 	@-docker swarm init
-	@-docker network create --driver=overlay devel
-	@go install github.com/api-gateway/plugin/...
+	@-docker network create --driver=overlay devel	
 
 download:
 	@echo "Download dependencies..."
-	@go get google.golang.org/grpc
-	@go get github.com/gogo/protobuf/protoc-gen-gogofast
+	@go get -u google.golang.org/grpc
+	@go get -u github.com/gogo/protobuf/protoc-gen-gogofast
 
-parse:	
-	@protoc -I${GOPATH}/src \
-	-I${GOPATH}/src/github.com/api-gateway/third_party \
-	-I${GOPATH}/src/github.com/gogo/protobuf ${GOPATH}/src/$(SERVICES_PARENT_DIR)/*/$(PROTO_DIR)/*.proto --parse_out=.
-	@echo Generate successfully.
-
-initial:
-	@echo "package loader\n"> loader/initial.go;
-	@for dir in $(shell cd ../../ && ls -d $(SERVICES_PARENT_DIR)/*/$(PROTO_DIR)); do \
-	echo 'import _ "'$$dir'"'>> loader/initial.go; done;\
-	json=`cat rules.json`;\
-	echo "\nconst PROTO_JSON = "$$json >> loader/initial.go;
-	@echo Initial successfully.
-
-build:parse initial
+build:
 	@go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go	
 	docker build -t $(IMG_HUB)/$(SERVICE):$(TAG) .
-	@rm rules.json
 
-run:prepare
-	cd example/echo && make run
-	cd example/helloworld && make run
+run:prepare	
 	@make build
 	@-docker service rm $(SERVICE)	
 	@docker service create --name $(SERVICE) --network devel -p 8080:8080 -e GRPC_GO_LOG_SEVERITY_LEVEL=INFO $(IMG_HUB)/$(SERVICE):$(TAG)
+	cd example/echo && make run
+	cd example/helloworld && make run
 
 test:
 	$(GOCMD) test -cover ./...

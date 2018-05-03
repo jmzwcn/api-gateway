@@ -5,6 +5,7 @@ import (
 	"net"
 
 	pb "github.com/api-gateway/example/helloworld/service"
+	_ "github.com/api-gateway/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )

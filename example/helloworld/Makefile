@@ -16,10 +16,12 @@ else
 	SED=sed
 endif
 
+prepare:
+	go install github.com/api-gateway/plugin/...
+
 generate-go:
 	@protoc -I${GOPATH}/src \
 	-I${GOPATH}/src/github.com/api-gateway/third_party \
-	-I${GOPATH}/src/github.com/gogo/protobuf \
 	--gogofast_out=\
 	Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,\
 	Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
@@ -32,7 +34,12 @@ generate-go:
 	@$(SED) -i '/google\/api/d' service/*.pb.go
 	@echo Generate successfully.
 
-build:
+parse:prepare generate-go	
+	@protoc -I${GOPATH}/src -I${GOPATH}/src/github.com/api-gateway/third_party \
+	$(shell pwd)/service/*.proto --parse_out=.
+	@echo Parse successfully.
+
+build:parse
 	go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) internal/cmd/main.go
 
 image:build

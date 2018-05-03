@@ -15,6 +15,8 @@ package helloworld
 
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
+import http "net/http"
+import strings "strings"
 import math "math"
 
 import context "golang.org/x/net/context"
@@ -555,4 +557,12 @@ var fileDescriptorHelloworld = []byte{
 	0xb1, 0x83, 0x4c, 0x4d, 0xaa, 0x4c, 0xb5, 0x62, 0xd4, 0x72, 0xe2, 0x39, 0xf1, 0x48, 0x8e, 0xf1,
 	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x93, 0xd8, 0xc0, 0x81, 0x62, 0x0c, 0x08, 0x00,
 	0x00, 0xff, 0xff, 0xe3, 0xb5, 0x77, 0xf9, 0x84, 0x01, 0x00, 0x00,
+}
+
+const PROTO_JSON ="[{\"Package\":\"helloworld\",\"Service\":\"Greeter\",\"Method\":{\"name\":\"SayHello\",\"input_type\":\".helloworld.HelloRequest\",\"output_type\":\".helloworld.HelloReply\",\"options\":{}},\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v2/hello/{name}\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"helloworld\",\"Service\":\"Greeter\",\"Method\":{\"name\":\"SayBye\",\"input_type\":\".helloworld.HelloRequest\",\"output_type\":\".helloworld.HelloReply\",\"options\":{}},\"Pattern\":{\"Verb\":\"PUT\",\"Path\":\"/v2/bye\",\"Body\":\"*\"},\"Options\":{}}]"
+
+func init() {
+	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/loader", "", strings.NewReader(PROTO_JSON)); err != nil {
+			fmt.Println(err)
+	 }
 }
