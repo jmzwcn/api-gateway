@@ -12,11 +12,12 @@ import (
 )
 
 type MethodWrapper struct {
-	Package string
-	Service string
-	Method  *descriptor.MethodDescriptorProto
-	Pattern Pattern
-	Options map[string]interface{}
+	Package             string
+	Service             string
+	Method              *descriptor.MethodDescriptorProto
+	InputTypeDescriptor *descriptor.DescriptorProto
+	Pattern             Pattern
+	Options             map[string]interface{}
 }
 
 type Pattern struct {

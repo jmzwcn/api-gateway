@@ -558,10 +558,10 @@ var fileDescriptorEcho = []byte{
 	0xff, 0xe1, 0xe8, 0x69, 0x92, 0x01, 0x00, 0x00,
 }
 
-const PROTO_JSON ="[{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Ping\",\"input_type\":\".google.protobuf.Empty\",\"output_type\":\".google.protobuf.Timestamp\",\"options\":{}},\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v1/ping\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Echo\",\"input_type\":\".echo.EchoRequest\",\"output_type\":\".echo.EchoResponse\",\"options\":{}},\"Pattern\":{\"Verb\":\"POST\",\"Path\":\"/v1/echo\",\"Body\":\"*\"},\"Options\":{}}]"
-
+const PROTO_JSON ="[{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Ping\",\"input_type\":\".google.protobuf.Empty\",\"output_type\":\".google.protobuf.Timestamp\",\"options\":{}},\"InputTypeDescriptor\":null,\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v1/ping\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Echo\",\"input_type\":\".echo.EchoRequest\",\"output_type\":\".echo.EchoResponse\",\"options\":{}},\"InputTypeDescriptor\":{\"name\":\"EchoRequest\",\"field\":[{\"name\":\"text\",\"number\":1,\"label\":1,\"type\":9,\"json_name\":\"text\"}]},\"Pattern\":{\"Verb\":\"POST\",\"Path\":\"/v1/echo\",\"Body\":\"*\"},\"Options\":{}}]"
+		
 func init() {
-	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/loader", "", strings.NewReader(PROTO_JSON)); err != nil {
-			fmt.Println(err)
+	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
+			panic(err)
 	 }
 }

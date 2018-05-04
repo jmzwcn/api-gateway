@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"io/ioutil"
@@ -25,7 +26,7 @@ func init() {
 func Run(hostBind string) {
 	mux := new(ExServeMux)
 	mux.HandleFunc("/", unaryHandler)
-	mux.HandleFunc("/loader", loaderHandler)
+	mux.HandleFunc("/rules", rulesHandler)
 	mux.HandleFunc("/debug/requests", trace.Traces)
 	mux.HandleFunc("/debug/events", trace.Events)
 
@@ -45,13 +46,13 @@ func unaryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func loaderHandler(w http.ResponseWriter, r *http.Request) {
+func rulesHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
-		out := ""
+		out := bytes.NewBufferString("")
 		for k, v := range ruleStore {
-			out = out + "\n" + k + " --> " + v.Package + "." + v.Service + "." + *v.Method.Name
+			out.WriteString("\n" + k + " --> " + v.Package + "." + v.Service + "." + *v.Method.Name)
 		}
-		w.Write([]byte(out))
+		w.Write(out.Bytes())
 	}
 
 	if r.Method == "POST" {

@@ -559,10 +559,10 @@ var fileDescriptorHelloworld = []byte{
 	0x00, 0xff, 0xff, 0xe3, 0xb5, 0x77, 0xf9, 0x84, 0x01, 0x00, 0x00,
 }
 
-const PROTO_JSON ="[{\"Package\":\"helloworld\",\"Service\":\"Greeter\",\"Method\":{\"name\":\"SayHello\",\"input_type\":\".helloworld.HelloRequest\",\"output_type\":\".helloworld.HelloReply\",\"options\":{}},\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v2/hello/{name}\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"helloworld\",\"Service\":\"Greeter\",\"Method\":{\"name\":\"SayBye\",\"input_type\":\".helloworld.HelloRequest\",\"output_type\":\".helloworld.HelloReply\",\"options\":{}},\"Pattern\":{\"Verb\":\"PUT\",\"Path\":\"/v2/bye\",\"Body\":\"*\"},\"Options\":{}}]"
-
+const PROTO_JSON ="[{\"Package\":\"helloworld\",\"Service\":\"Greeter\",\"Method\":{\"name\":\"SayHello\",\"input_type\":\".helloworld.HelloRequest\",\"output_type\":\".helloworld.HelloReply\",\"options\":{}},\"InputTypeDescriptor\":{\"name\":\"HelloRequest\",\"field\":[{\"name\":\"name\",\"number\":1,\"label\":1,\"type\":9,\"json_name\":\"name\"}]},\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v2/hello/{name}\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"helloworld\",\"Service\":\"Greeter\",\"Method\":{\"name\":\"SayBye\",\"input_type\":\".helloworld.HelloRequest\",\"output_type\":\".helloworld.HelloReply\",\"options\":{}},\"InputTypeDescriptor\":{\"name\":\"HelloRequest\",\"field\":[{\"name\":\"name\",\"number\":1,\"label\":1,\"type\":9,\"json_name\":\"name\"}]},\"Pattern\":{\"Verb\":\"PUT\",\"Path\":\"/v2/bye\",\"Body\":\"*\"},\"Options\":{}}]"
+		
 func init() {
-	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/loader", "", strings.NewReader(PROTO_JSON)); err != nil {
-			fmt.Println(err)
+	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
+			panic(err)
 	 }
 }

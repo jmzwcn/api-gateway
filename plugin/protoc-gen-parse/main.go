@@ -12,11 +12,13 @@ import (
 	"github.com/api-gateway/types"
 	"github.com/api-gateway/types/log"
 	"github.com/gogo/protobuf/proto"
+	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/plugin"
 )
 
 var (
-	SOME_PROTO_FILE = ""
+	oneProtoFile = ""
+	messagesMap  = make(map[string]*descriptor.DescriptorProto)
 )
 
 func main() {
@@ -33,8 +35,13 @@ func main() {
 	var methods []types.MethodWrapper
 	for _, protoFile := range request.GetProtoFile() {
 		for _, generateFileName := range request.FileToGenerate {
-			SOME_PROTO_FILE = generateFileName
+			oneProtoFile = generateFileName
 			if *protoFile.Name == generateFileName {
+				for _, v := range protoFile.MessageType {
+					key := "." + *protoFile.Package + "." + *v.Name
+					messagesMap[key] = v
+				}
+
 				for _, service := range protoFile.Service {
 					for _, md := range service.Method {
 						method := types.MethodWrapper{}
@@ -43,6 +50,7 @@ func main() {
 						method.Package = *protoFile.Package
 						method.Service = *service.Name
 						method.Method = md
+						method.InputTypeDescriptor = messagesMap[*md.InputType]
 
 						if aut, err := proto.GetExtension(md.Options, runtime.E_Authentication); err == nil {
 							au := aut.(*bool)
@@ -72,8 +80,8 @@ func main() {
 		log.Fatalln("json.Marshal eror", err)
 	}
 
-	SOME_PROTO_FILE = os.Getenv("GOPATH") + "/src/" + strings.TrimSuffix(SOME_PROTO_FILE, ".proto") + ".pb.go"
-	input, err := ioutil.ReadFile(SOME_PROTO_FILE)
+	oneProtoFile = os.Getenv("GOPATH") + "/src/" + strings.TrimSuffix(oneProtoFile, ".proto") + ".pb.go"
+	input, err := ioutil.ReadFile(oneProtoFile)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -87,13 +95,13 @@ func main() {
 		}
 	}
 	output := strings.Join(lines, "\n")
-	append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `
+	append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `		
 func init() {
-	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/loader", "", strings.NewReader(PROTO_JSON)); err != nil {
-			fmt.Println(err)
+	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
+			panic(err)
 	 }
 }`
-	err = ioutil.WriteFile(SOME_PROTO_FILE, []byte(output+append), 0644)
+	err = ioutil.WriteFile(oneProtoFile, []byte(output+append), 0644)
 	if err != nil {
 		log.Fatalln(err)
 	}
