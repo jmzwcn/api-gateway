@@ -2,8 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 
@@ -14,28 +12,30 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"github.com/gogo/protobuf/protoc-gen-gogo/plugin"
+	"github.com/gogo/protobuf/vanity"
+	"github.com/gogo/protobuf/vanity/command"
 )
 
 var (
-	oneProtoFile = ""
+	oneProtoFile *plugin_go.CodeGeneratorResponse_File
 	messagesMap  = make(map[string]*descriptor.DescriptorProto)
 )
 
 func main() {
-	data, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		log.Fatalln("error reading input")
-	}
+	//gogofast with extension
+	req := command.Read()
+	files := req.GetProtoFile()
+	files = vanity.FilterFiles(files, vanity.NotGoogleProtobufDescriptorProto)
 
-	request := new(plugin_go.CodeGeneratorRequest)
-	if err := proto.Unmarshal(data, request); err != nil {
-		log.Fatalln(err)
-	}
+	vanity.ForEachFile(files, vanity.TurnOnMarshalerAll)
+	vanity.ForEachFile(files, vanity.TurnOnSizerAll)
+	vanity.ForEachFile(files, vanity.TurnOnUnmarshalerAll)
+
+	resp := command.Generate(req)
 
 	var methods []types.MethodWrapper
-	for _, protoFile := range request.GetProtoFile() {
-		for _, generateFileName := range request.FileToGenerate {
-			oneProtoFile = generateFileName
+	for _, protoFile := range files {
+		for _, generateFileName := range req.FileToGenerate {
 			if *protoFile.Name == generateFileName {
 				for _, v := range protoFile.MessageType {
 					key := "." + *protoFile.Package + "." + *v.Name
@@ -79,14 +79,9 @@ func main() {
 	if err != nil {
 		log.Fatalln("json.Marshal eror", err)
 	}
-
-	oneProtoFile = os.Getenv("GOPATH") + "/src/" + strings.TrimSuffix(oneProtoFile, ".proto") + ".pb.go"
-	input, err := ioutil.ReadFile(oneProtoFile)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	lines := strings.Split(string(input), "\n")
+	//inject api in one *.pb.go
+	oneProtoFile = resp.File[len(resp.File)-1]
+	lines := strings.Split(*oneProtoFile.Content, "\n")
 	for i, line := range lines {
 		if strings.Contains(line, `import fmt "fmt"`) {
 			lines[i] = lines[i] + "\n" +
@@ -95,16 +90,15 @@ func main() {
 		}
 	}
 	output := strings.Join(lines, "\n")
-	append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `		
+	append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `
 func init() {
-	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
-			panic(err)
-	 }
-}`
-	err = ioutil.WriteFile(oneProtoFile, []byte(output+append), 0644)
-	if err != nil {
-		log.Fatalln(err)
+	if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
+		panic(err)
 	}
+}`
+	newContent := output + append
+	oneProtoFile.Content = &newContent
+	command.Write(resp)
 }
 
 func getVerbAndPath(opts *google_api.HttpRule) (string, string) {

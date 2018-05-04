@@ -559,9 +559,9 @@ var fileDescriptorEcho = []byte{
 }
 
 const PROTO_JSON ="[{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Ping\",\"input_type\":\".google.protobuf.Empty\",\"output_type\":\".google.protobuf.Timestamp\",\"options\":{}},\"InputTypeDescriptor\":null,\"Pattern\":{\"Verb\":\"GET\",\"Path\":\"/v1/ping\",\"Body\":\"\"},\"Options\":{}},{\"Package\":\"echo\",\"Service\":\"Echo\",\"Method\":{\"name\":\"Echo\",\"input_type\":\".echo.EchoRequest\",\"output_type\":\".echo.EchoResponse\",\"options\":{}},\"InputTypeDescriptor\":{\"name\":\"EchoRequest\",\"field\":[{\"name\":\"text\",\"number\":1,\"label\":1,\"type\":9,\"json_name\":\"text\"}]},\"Pattern\":{\"Verb\":\"POST\",\"Path\":\"/v1/echo\",\"Body\":\"*\"},\"Options\":{}}]"
-		
+
 func init() {
-	 if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
-			panic(err)
-	 }
+	if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
+		panic(err)
+	}
 }
