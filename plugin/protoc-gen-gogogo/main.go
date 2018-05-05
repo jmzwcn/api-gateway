@@ -22,14 +22,10 @@ var (
 )
 
 func main() {
-	//gogofast with extension
+	//gogo with extension
 	req := command.Read()
 	files := req.GetProtoFile()
 	files = vanity.FilterFiles(files, vanity.NotGoogleProtobufDescriptorProto)
-
-	vanity.ForEachFile(files, vanity.TurnOnMarshalerAll)
-	vanity.ForEachFile(files, vanity.TurnOnSizerAll)
-	vanity.ForEachFile(files, vanity.TurnOnUnmarshalerAll)
 
 	resp := command.Generate(req)
 
@@ -75,29 +71,32 @@ func main() {
 		}
 	}
 
-	jsonOut, err := json.Marshal(methods)
-	if err != nil {
-		log.Fatalln("json.Marshal eror", err)
-	}
-	//inject api in one *.pb.go
-	oneProtoFile = resp.File[len(resp.File)-1]
-	lines := strings.Split(*oneProtoFile.Content, "\n")
-	for i, line := range lines {
-		if strings.Contains(line, `import fmt "fmt"`) {
-			lines[i] = lines[i] + "\n" +
-				`import http "net/http"` + "\n" +
-				`import strings "strings"`
+	if methods != nil {
+		jsonOut, err := json.Marshal(methods)
+		if err != nil {
+			log.Fatalln("json.Marshal eror", err)
 		}
-	}
-	output := strings.Join(lines, "\n")
-	append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `
+		//inject api in one *.pb.go
+		oneProtoFile = resp.File[len(resp.File)-1]
+		lines := strings.Split(*oneProtoFile.Content, "\n")
+		for i, line := range lines {
+			if strings.Contains(line, `import fmt "fmt"`) {
+				lines[i] = lines[i] + "\n" +
+					`import http "net/http"` + "\n" +
+					`import strings "strings"`
+			}
+		}
+		output := strings.Join(lines, "\n")
+		append := "\nconst PROTO_JSON =" + strconv.Quote(string(jsonOut)) + "\n" + `
 func init() {
 	if _, err := (&http.Client{}).Post("http://api-gateway:8080/rules", "", strings.NewReader(PROTO_JSON)); err != nil {
 		panic(err)
 	}
 }`
-	newContent := output + append
-	oneProtoFile.Content = &newContent
+		newContent := output + append
+		oneProtoFile.Content = &newContent
+	}
+
 	command.Write(resp)
 }
 
@@ -120,9 +119,8 @@ func getVerbAndPath(opts *google_api.HttpRule) (string, string) {
 		httpMethod = "PATCH"
 		path = opts.GetPatch()
 	case opts.GetCustom() != nil:
-		custom := opts.GetCustom()
-		httpMethod = custom.Kind
-		path = custom.Path
+		httpMethod = opts.GetCustom().Kind
+		path = opts.GetCustom().Path
 	}
 	return httpMethod, path
 }

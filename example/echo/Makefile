@@ -22,8 +22,7 @@ prepare:
 generate-go:
 	@protoc -I${GOPATH}/src \
 	-I${GOPATH}/src/github.com/api-gateway/third_party \
-	-I${GOPATH}/src/github.com/gogo/protobuf \
-	--parse_out=\
+	--gogogo_out=\
 	Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,\
 	Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types,\
 	Mgoogle/protobuf/struct.proto=github.com/gogo/protobuf/types,\
