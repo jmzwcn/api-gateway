@@ -1,9 +1,3 @@
-##################################################
-# All macro-services's parent directory
-SERVICES_PARENT_DIR=github.com/api-gateway/example
-# PROTO_DIR includes *.proto
-PROTO_DIR=service
-##################################################
 # Variables
 SERVICE=api-gateway
 IMG_HUB?=registry.test.io/test
@@ -15,12 +9,6 @@ RELEASE=production
 BUILD_HASH=${shell git rev-parse HEAD}
 BUILD_TIME=${shell date "+%Y-%m-%d@%H:%M:%SZ%z"}
 LD_FLAGS:=-X main.Version=$(VERSION) -X main.Revision=$(REVISION) -X main.Release=$(RELEASE) -X main.BuildHash=$(BUILD_HASH) -X main.BuildTime=$(BUILD_TIME)
-
-ifeq (${shell uname -s}, Darwin)
-	SED=gsed
-else
-	SED=sed
-endif
 
 prepare: SHELL:=bash
 prepare:download
@@ -36,15 +24,14 @@ build:
 	@go build -ldflags="$(LD_FLAGS)" -o bundles/$(SERVICE) cmd/main.go	
 	docker build -t $(IMG_HUB)/$(SERVICE):$(TAG) .
 
-run:prepare	
-	@make build
+run:prepare	build
 	@-docker service rm $(SERVICE)	
 	@docker service create --name $(SERVICE) --network devel -p 8080:8080 -e GRPC_GO_LOG_SEVERITY_LEVEL=INFO $(IMG_HUB)/$(SERVICE):$(TAG)
 	cd example/echo && make run
 	cd example/helloworld && make run
 
 test:
-	$(GOCMD) test -cover ./...
+	@go test -cover ./...
 
 # PHONY
 .PHONY : test test-integration generate fmt
