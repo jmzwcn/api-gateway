@@ -6,8 +6,8 @@ A native and easy gateway to provide RESTful API for gRPC, inspired by [grpc-gat
 
 ## Usage:
 * Get code: [git clone https://github.com/jmzwcn/api-gateway.git];
-* Generate your *.pb.go using protoc-gen-gogogo(e.g. example/echo/Makefile);
-* "make run";
+* Generate your *.pb.go with protoc-gen-gogogo;
+* Run "make" in Makefile;
 * Try the URL in your proto.
 
 
