@@ -1,12 +1,9 @@
 package types
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/url"
 
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
 	"github.com/gogo/protobuf/protoc-gen-gogo/descriptor"
 	"google.golang.org/grpc/encoding"
 )
@@ -39,17 +36,17 @@ func init() {
 type MuxCodec struct{}
 
 func (MuxCodec) Marshal(v interface{}) ([]byte, error) {
-	if v, ok := v.(proto.Message); ok {
-		vs, _ := (&jsonpb.Marshaler{}).MarshalToString(v)
-		return []byte(vs), nil
-	}
+	// if v, ok := v.(proto.Message); ok {
+	// 	vs, _ := (&jsonpb.Marshaler{}).MarshalToString(v)
+	// 	return []byte(vs), nil
+	// }
 	return json.Marshal(v)
 }
 
 func (MuxCodec) Unmarshal(data []byte, v interface{}) error {
-	if v, ok := v.(proto.Message); ok {
-		return jsonpb.Unmarshal(bytes.NewBuffer(data), v)
-	}
+	// if v, ok := v.(proto.Message); ok {
+	// 	return jsonpb.Unmarshal(bytes.NewBuffer(data), v)
+	// }
 	return json.Unmarshal(data, v)
 }
 

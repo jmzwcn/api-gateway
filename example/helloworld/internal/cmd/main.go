@@ -4,8 +4,10 @@ import (
 	"log"
 	"net"
 
+	echo "github.com/api-gateway/example/echo/service"
 	pb "github.com/api-gateway/example/helloworld/service"
 	_ "github.com/api-gateway/types"
+	"github.com/gogo/protobuf/types"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
@@ -18,7 +20,15 @@ const (
 type server struct{}
 
 func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
+	conn, err := grpc.Dial("echo:50051", grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	reply, er := echo.NewEchoClient(conn).Ping(ctx, &types.Empty{})
+	if er != nil {
+		return nil, err
+	}
+	return &pb.HelloReply{Message: "Hello " + in.Name + "-" + reply.String()}, nil
 }
 
 func (s *server) SayBye(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
