@@ -20,7 +20,7 @@ prepare:
 	go install github.com/api-gateway/plugin/...
 
 generate-go:
-	@protoc -I${GOPATH}/src \
+	@protoc -I${GOPATH}/src -I./service \
 	-I${GOPATH}/src/github.com/api-gateway/third_party \
 	--gogogo_out=\
 	Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types,\
@@ -29,8 +29,7 @@ generate-go:
 	Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
 	Mgoogle/protobuf/empty.proto=github.com/gogo/protobuf/types,\
 	Mgoogle/protobuf/wrappers.proto=github.com/gogo/protobuf/types,\
-	plugins=grpc:../../../../ \
-	 $(shell pwd)/service/*.proto
+	plugins=grpc:./service service/*.proto
 	@$(SED) -i '/google\/api/d' service/*.pb.go
 	@echo Generate successfully.
 
